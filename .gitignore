@@ -1,0 +1,11 @@
+# Specify filepatterns you want git to ignore.
+
+.vs/*
+
+/out.raw
+/info.txt
+/*.sdf
+/*.opensdf
+/bin
+/x64
+**/x64
