@@ -45,7 +45,7 @@ extern "C" {
 #define DLL
 #endif
 
-#define H5Z_FILTER_B3D 32016
+#define H5Z_FILTER_B5D 32666
 //#define PUSH_ERR(func, minor, str)  H5Epush1(__FILE__, func, __LINE__, H5E_PLINE, minor, str)
 
 #define H5Z_FILTER_B3D_VERSION 1

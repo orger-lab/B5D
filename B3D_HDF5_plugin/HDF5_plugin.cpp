@@ -17,7 +17,7 @@ extern "C" {
 
 	const H5Z_class2_t H5Z_CUDACOMPRESS[1] = { {
 		H5Z_CLASS_T_VERS,       /* H5Z_class_t version */
-		(H5Z_filter_t)H5Z_FILTER_B3D,         /* Filter id number             */
+		(H5Z_filter_t)H5Z_FILTER_B5D,         /* Filter id number             */
 		1,              /* encoder_present flag (set to true) */
 		1,              /* decoder_present flag (set to true) */
 		"HDF5 B3D filter",	/* Filter name for debugging    */
@@ -145,7 +145,7 @@ extern "C" {
 		size_t nelements = 16;
 		unsigned values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-		r = H5Pget_filter_by_id2(dcpl, H5Z_FILTER_B3D, &flags, &nelements, values, 0, NULL, NULL);
+		r = H5Pget_filter_by_id2(dcpl, H5Z_FILTER_B5D, &flags, &nelements, values, 0, NULL, NULL);
 		if (r < 0) return -1;
 
 		if (nelements < N_CD_VALUES+4) nelements = N_CD_VALUES+4;  /* First 9 slots reserved.  If any higher
@@ -249,7 +249,7 @@ extern "C" {
 		fprintf(stderr, "cudaCompress: Computed buffer size %d\n", bufsize);
 		#endif
 
-		r = H5Pmodify_filter(dcpl, H5Z_FILTER_B3D, flags, nelements, values);
+		r = H5Pmodify_filter(dcpl, H5Z_FILTER_B5D, flags, nelements, values);
 		if (r < 0) return -1;
 
 		return 1;
