@@ -103,6 +103,8 @@ extern "C" {
 		//int ndims = H5Sget_simple_extent_ndims(space);
 		//int r = H5Sget_simple_extent_dims(space, chunkdims, nullptr);
 
+
+		// Aaron Edit: Might need to change this if we want more than three dims
 		if (ndims < 2 || ndims > 3)
 			return 0;
 
@@ -139,7 +141,7 @@ extern "C" {
 
 		unsigned int elemSize;
 		unsigned int bufsize;
-		hsize_t chunkdims[32];
+		hsize_t chunkdims[32];  // Aaron edit: hsize_t is just a typedef for int ???
 
 		unsigned int flags;
 		size_t nelements = 16;
@@ -162,7 +164,7 @@ extern "C" {
 		if (values[3] == 0) values[3] = 0;		// background level
 		if (values[4] == 0) values[4] = 0;		// read noise (electrons)*1000
 		if (values[5] == 0) values[5] = 24;		// tile size
-		if (values[6] == 0) values[6] = H5Z_FILTER_B3D_VERSION;
+		if (values[6] == 0) values[6] = H5Z_FILTER_B5D_VERSION;
 		// change N_CD_VALUES when adding more options
 
 		// only ndims 2 and 3 are allowed, no size constraint in z direction
