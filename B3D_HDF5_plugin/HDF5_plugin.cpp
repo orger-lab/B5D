@@ -224,8 +224,8 @@ extern "C" {
 		char buffer[50];
 		char* buffer2;
 
-		// check if environment variable B3D_INSTANCE is set
-		buffer2 = getenv("B3D_INSTANCE");
+		// check if environment variable B5D_INSTANCE is set
+		buffer2 = getenv("B5D_INSTANCE");
 		// if set free it up
 		if (buffer2 != nullptr) {
 			sscanf(buffer2, "%p", &pShared);
@@ -239,11 +239,14 @@ extern "C" {
 			pShared = new CPUResources(chunkdims[2], chunkdims[1], chunkdims[0], DEVICE);
 		}
 		else {
-			pShared = new GPUResources(chunkdims[2], chunkdims[1], chunkdims[0], DEVICE);
+			pShared = new GPUResources(chunkdims[2], // z
+				chunkdims[1], // y
+				chunkdims[0], // x
+				DEVICE);
 		}
 		//pShared->create(config);
-		// set B3D_INSTANCE environment variable to GPUResources pointer
-		sprintf(buffer, "B3D_INSTANCE=%p", pShared);
+		// set B5D_INSTANCE environment variable to GPUResources pointer
+		sprintf(buffer, "B5D_INSTANCE=%p", pShared);
 		putenv(buffer);
 
 
@@ -280,6 +283,22 @@ extern "C" {
 		9 depth
 		10 data type
 		*/
+
+		/* Aaron edit: From the H5Z_cudaCompress_set_local function
+		if (values[0] == 0) values[0] = 0;		// quantStep
+		if (values[1] == 0) values[1] = 1;		// mode
+		if (values[2] == 0) values[2] = 1000;	// conversion (num/photoelectrons)*1000
+		if (values[3] == 0) values[3] = 0;		// background level
+		if (values[4] == 0) values[4] = 0;		// read noise (electrons)*1000
+		if (values[5] == 0) values[5] = 24;		// tile size
+		if (values[6] == 0) values[6] = H5Z_FILTER_B5D_VERSION;
+
+		N_CD_VALUES + 0 // x
+		N_CD_VALUES + 1 // y 
+		N_CD_VALUES + 2 // z
+		N_CD_VALUES + 3 // type: int/uint/float/...
+		*/
+
 		cudaError status;
 
 		float quantStep = cd_values[0] / 1000.0f; 
@@ -299,12 +318,12 @@ extern "C" {
 		// Initialize cudaCompress, allocate GPU resources and upload data.
 		
 		int elemCount = sizeX * sizeY * sizeZ; 
-		outDataLength = elemCount * sizeof(short);
+		outDataLength = elemCount * sizeof(short); // Aaron edit: should this be sizeof(type) ???
 		Resources* shared;
 		char buffer[50];
 		char* buffer2;
 		// read environment variable
-		buffer2 = getenv("B3D_INSTANCE");
+		buffer2 = getenv("B5D_INSTANCE");
 		// if set use it as GPUResources
 		if (buffer2 != nullptr) {
 			sscanf(buffer2, "%p", &shared);
@@ -320,7 +339,7 @@ extern "C" {
 			else {
 				shared = new GPUResources(sizeX, sizeY, sizeZ, DEVICE);
 			}
-			sprintf(buffer, "B3D_INSTANCE=%p", shared);
+			sprintf(buffer, "B5D_INSTANCE=%p", shared);
 			putenv(buffer);
 		}
 		 
