@@ -1,4 +1,4 @@
-=B5D
+# Orger lab B5D Implemenation
 
 A reimplementation of B3D, but extending it to work with 5D datasets.
 
