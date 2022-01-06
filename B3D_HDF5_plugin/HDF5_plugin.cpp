@@ -105,7 +105,7 @@ extern "C" {
 
 
 		// Aaron Edit: Might need to change this if we want more than three dims
-		if (ndims < 2 || ndims > 3)
+		if (ndims < 2 || ndims > 5)
 			return 0;
 
 		
