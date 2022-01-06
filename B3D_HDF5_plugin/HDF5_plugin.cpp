@@ -150,7 +150,7 @@ extern "C" {
 		r = H5Pget_filter_by_id2(dcpl, H5Z_FILTER_B5D, &flags, &nelements, values, 0, NULL, NULL);
 		if (r < 0) return -1;
 
-		if (nelements < N_CD_VALUES+4) nelements = N_CD_VALUES+4;  /* First 9 slots reserved.  If any higher
+		if (nelements < N_CD_VALUES+6) nelements = N_CD_VALUES+6;  /* First 9 slots reserved.  If any higher
 										   slots are used, preserve the contents. */
 
 		
@@ -168,6 +168,7 @@ extern "C" {
 		// change N_CD_VALUES when adding more options
 
 		// only ndims 2 and 3 are allowed, no size constraint in z direction
+		// TODO: fix this for 5D
 		for (i = ndims - 2; i < ndims; i++){
 			if (values[1] > 100)
 				chunkdims[i] = getAlignedSize(chunkdims[i], 1 << (values[1]-100));
@@ -179,13 +180,35 @@ extern "C" {
 		if (ndims == 2) {
 			values[N_CD_VALUES + 0] = chunkdims[1]; // sizeX
 			values[N_CD_VALUES + 1] = chunkdims[0]; // sizeY
-			values[N_CD_VALUES + 2] = 1; // sizeZ
+			values[N_CD_VALUES + 2] = 1; 			// sizeZ
+			values[N_CD_VALUES + 3] = 1; 			// sizeC
+			values[N_CD_VALUES + 4] = 1; 			// sizeT
+
 		}
 		else if (ndims == 3) {
 			values[N_CD_VALUES + 0] = chunkdims[2]; // sizeX
 			values[N_CD_VALUES + 1] = chunkdims[1]; // sizeY
 			values[N_CD_VALUES + 2] = chunkdims[0]; // sizeZ
+			values[N_CD_VALUES + 3] = 1; 			// sizeC
+			values[N_CD_VALUES + 4] = 1; 			// sizeT
+
 		}
+		else if (ndims == 4) {
+			values[N_CD_VALUES + 0] = chunkdims[3]; // sizeX
+			values[N_CD_VALUES + 1] = chunkdims[2]; // sizeY
+			values[N_CD_VALUES + 2] = chunkdims[1]; // sizeZ
+			values[N_CD_VALUES + 3] = chunkdims[0]; // sizeC
+			values[N_CD_VALUES + 4] = 1; 			// sizeT
+		}
+		else if (ndims == 5) {
+			values[N_CD_VALUES + 0] = chunkdims[4]; // sizeX
+			values[N_CD_VALUES + 1] = chunkdims[3]; // sizeY
+			values[N_CD_VALUES + 2] = chunkdims[2]; // sizeZ
+			values[N_CD_VALUES + 3] = chunkdims[1]; // sizeC
+			values[N_CD_VALUES + 4] = chunkdims[0]; // sizeT
+		}
+
+
 
 		elemSize = H5Tget_size(type);
 		H5T_order_t ord = H5Tget_order(type);
@@ -197,20 +220,20 @@ extern "C" {
 		if (clss == H5T_INTEGER) {
 			if (sgn == H5T_SGN_NONE) {
 				if (elemSize == 1)
-					values[N_CD_VALUES + 3] = UINT8_TYPE;
+					values[N_CD_VALUES + 5] = UINT8_TYPE;
 				if (elemSize == 2)
-					values[N_CD_VALUES + 3] = UINT16_TYPE;
+					values[N_CD_VALUES + 5] = UINT16_TYPE;
 			}
 			else {
 				if (elemSize == 1)
-					values[N_CD_VALUES + 3] = INT8_TYPE;
+					values[N_CD_VALUES + 5] = INT8_TYPE;
 				if (elemSize == 2)
-					values[N_CD_VALUES + 3] = INT16_TYPE;
+					values[N_CD_VALUES + 5] = INT16_TYPE;
 			}
 		}
 		else if (clss == H5T_FLOAT) {
 			if (elemSize == 2)
-				values[N_CD_VALUES + 3] = FLOAT32_TYPE;
+				values[N_CD_VALUES + 5] = FLOAT32_TYPE;
 		}
 
 
@@ -232,6 +255,10 @@ extern "C" {
 			pShared->destroy();
 			delete pShared;
 		}
+
+		// TODO: Either update all subsequent functions for 5D,
+		//       or flatten the 5D representation to a big 3D representation
+
 		// initiate GPUResources
 		//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(chunkdims[2], chunkdims[1], chunkdims[0], values[1], DEVICE);
 		//pShared = new GPUResources;
