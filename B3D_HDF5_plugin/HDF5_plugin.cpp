@@ -405,19 +405,23 @@ extern "C" {
 			if (quantStep > 0) {
 				// start lossy decompression
 				if (useCPU) {
-					decompressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+					decompressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
+						sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 				else {
-					decompressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+					decompressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
+						sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 			}
 			else {
 				// start lossless decompression
 				if (useCPU) {
-					decompressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+					decompressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
+						sizeX, sizeY, sizeZ, dwtLevels, tileSize);
 				}
 				else {
-					decompressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+					decompressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
+						sizeX, sizeY, sizeZ, dwtLevels, tileSize);
 				}
 
 			}
@@ -476,19 +480,27 @@ extern "C" {
 			if (quantStep > 0) {
 				// start lossy compression
 				if (useCPU) {
-					compressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+					compressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, 
+						dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, 
+					quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 				else {
-					compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+					compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, 
+						dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, 
+					quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 			}
 			else {
 				// start lossless compression
 				if (useCPU) {
-					compressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+					compressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
+						dpSymbols, sizeX, sizeY, sizeZ, 
+					dwtLevels, tileSize);
 				}
 				else {
-					compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+					compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
+						dpSymbols, sizeX, sizeY, sizeZ, 
+					dwtLevels, tileSize);
 				}
 			}
 			/* compressed data is now in bitStream - both GPU and CPU version
