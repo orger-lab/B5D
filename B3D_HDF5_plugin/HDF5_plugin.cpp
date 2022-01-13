@@ -343,12 +343,16 @@ extern "C" {
 		uint sizeX = cd_values[N_CD_VALUES + 0];
 		uint sizeY = cd_values[N_CD_VALUES + 1];
 		uint sizeZ = cd_values[N_CD_VALUES + 2];
+		uint sizeC = cd_values[N_CD_VALUES + 3];
+		uint sizeT = cd_values[N_CD_VALUES + 4];
 
-		uint type = cd_values[N_CD_VALUES + 3];
+		uint type = cd_values[N_CD_VALUES + 5];
+
+		uint newSizeZ = sizeZ * sizeC * sizeT;
 
 		// Initialize cudaCompress, allocate GPU resources and upload data.
 		
-		int elemCount = sizeX * sizeY * sizeZ; 
+		int elemCount = sizeX * sizeY * newSizeZ; 
 		outDataLength = elemCount * sizeof(short); // Aaron edit: should this be sizeof(type) ???
 		Resources* shared;
 		char buffer[50];
@@ -362,13 +366,13 @@ extern "C" {
 		// if not set, initialize GPUResources and set environment variable
 		else {
 			//shared = new GPUResources;
-			//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(sizeX, sizeY, sizeZ, dwtLevels, DEVICE);
+			//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(sizeX, sizeY, newSizeZ, dwtLevels, DEVICE);
 			//shared->create(config);
 			if (useCPU) {
-				shared = new CPUResources(sizeX, sizeY, sizeZ, DEVICE);
+				shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			else {
-				shared = new GPUResources(sizeX, sizeY, sizeZ, DEVICE);
+				shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			sprintf(buffer, "B5D_INSTANCE=%p", shared);
 			putenv(buffer);
@@ -410,22 +414,22 @@ extern "C" {
 				// start lossy decompression
 				if (useCPU) {
 					decompressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
-						sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+						sizeX, sizeY, newSizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 				else {
 					decompressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
-						sizeX, sizeY, sizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
+						sizeX, sizeY, newSizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 			}
 			else {
 				// start lossless decompression
 				if (useCPU) {
 					decompressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
-						sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+						sizeX, sizeY, newSizeZ, dwtLevels, tileSize);
 				}
 				else {
 					decompressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
-						sizeX, sizeY, sizeZ, dwtLevels, tileSize);
+						sizeX, sizeY, newSizeZ, dwtLevels, tileSize);
 				}
 
 			}
@@ -485,12 +489,12 @@ extern "C" {
 				// start lossy compression
 				if (useCPU) {
 					compressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, 
-						dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, 
+						dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
 					quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 				else {
 					compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, 
-						dpSymbols, sizeX, sizeY, sizeZ, dwtLevels, 
+						dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
 					quantStep, bgLevel, tileSize, conversion, readNoise);
 				}
 			}
@@ -498,12 +502,12 @@ extern "C" {
 				// start lossless compression
 				if (useCPU) {
 					compressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
-						dpSymbols, sizeX, sizeY, sizeZ, 
+						dpSymbols, sizeX, sizeY, newSizeZ, 
 					dwtLevels, tileSize);
 				}
 				else {
 					compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
-						dpSymbols, sizeX, sizeY, sizeZ, 
+						dpSymbols, sizeX, sizeY, newSizeZ, 
 					dwtLevels, tileSize);
 				}
 			}
