@@ -288,6 +288,9 @@ extern "C" {
 		r = H5Pmodify_filter(dcpl, H5Z_FILTER_B5D, flags, nelements, values);
 		if (r < 0) return -1;
 
+		// Aaron caveman debugging:
+		fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", tileSize)
+
 		return 1;
 	}
 
@@ -528,6 +531,8 @@ extern "C" {
 			shared->releaseBuffers(4);
 		}
 
+		// Aaron caveman debugging:
+		fprintf(stderr, "H5Z_cudaCompress_filter tileSize: %d\n", tileSize)
 		/* clean up gpu buffers */
 		/* 	allocate GPU resources externally, pass pointer in cd_values to filter, clean them up later */
 
@@ -576,11 +581,6 @@ extern "C" {
 		int outDataLength;
 		cudaError status;
 		//GPUResources* res = *pRes;
-
-		// Aaron edit: Add extra dimensions?
-		/*uint sizeX = size[2];
-		uint sizeY = size[1];
-		uint sizeZ = size[0];*/
 
 		uint sizeX = size[2];
 		uint sizeY = size[1];
