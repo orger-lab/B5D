@@ -577,9 +577,15 @@ extern "C" {
 		cudaError status;
 		//GPUResources* res = *pRes;
 
+		// Aaron edit: Add extra dimensions?
+		/*uint sizeX = size[2];
+		uint sizeY = size[1];
+		uint sizeZ = size[0];*/
+
 		uint sizeX = size[2];
 		uint sizeY = size[1];
 		uint sizeZ = size[0];
+
 		uint elemCount = sizeX * sizeY * sizeZ;
 		outDataLength = elemCount * sizeof(short);
 
