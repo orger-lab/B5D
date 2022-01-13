@@ -289,7 +289,7 @@ extern "C" {
 		if (r < 0) return -1;
 
 		// Aaron caveman debugging:
-		fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", tileSize)
+		// fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", (values[5]));
 
 		return 1;
 	}
@@ -532,7 +532,7 @@ extern "C" {
 		}
 
 		// Aaron caveman debugging:
-		fprintf(stderr, "H5Z_cudaCompress_filter tileSize: %d\n", tileSize)
+		//fprintf(stderr, "H5Z_cudaCompress_filter tileSize: %d\n", tileSize);
 		/* clean up gpu buffers */
 		/* 	allocate GPU resources externally, pass pointer in cd_values to filter, clean them up later */
 
