@@ -259,6 +259,10 @@ extern "C" {
 		// TODO: Either update all subsequent functions for 5D,
 		//       or flatten the 5D representation to a big 3D representation
 
+		uint newZ = values[N_CD_VALUES + 2] * 
+					values[N_CD_VALUES + 3] * 
+					values[N_CD_VALUES + 4];
+
 		// initiate GPUResources
 		//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(chunkdims[2], chunkdims[1], chunkdims[0], values[1], DEVICE);
 		//pShared = new GPUResources;
@@ -266,9 +270,9 @@ extern "C" {
 			pShared = new CPUResources(chunkdims[2], chunkdims[1], chunkdims[0], DEVICE);
 		}
 		else {
-			pShared = new GPUResources(chunkdims[2], // z
-				chunkdims[1], // y
-				chunkdims[0], // x
+			pShared = new GPUResources(newZ, // z
+				values[N_CD_VALUES + 1], // y
+				values[N_CD_VALUES + 0], // x
 				DEVICE);
 		}
 		//pShared->create(config);
