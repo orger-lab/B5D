@@ -1,6 +1,6 @@
 #!/bin/python3
 
-# import os
+import os
 import h5py as h5
 import pathlib as pl
 import sys
@@ -121,6 +121,10 @@ class B5D_Compression_Test:
 	def convertB5Dto3D(self, inFile, 
 		dataset_name, outFile):
 		f = h5.File(inFile,'r')
+		if os.path.isfile(inFile):
+			f = h5.File(inFile,'r')
+		else:
+			sys.exit("There is not an existing B5D 5D dataset")
 		x,y,z,c,t = f[dataset_name].shape
 		localData = f[dataset_name].reshape(x,y,z*c*t)
 		out = h5.File(outFile,'w')
