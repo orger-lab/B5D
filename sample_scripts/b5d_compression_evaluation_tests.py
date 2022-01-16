@@ -50,7 +50,7 @@ class FileHandler:
 			self.outDir = pl.Path(outDir)
 
 		if (outName is None):
-			self.outName = "test.h5"
+			self.outName = "test"
 		else:
 			self.outName = outName
 
@@ -59,8 +59,14 @@ class FileHandler:
 	def fullInFile(self):
 		return self.inDir / self.inFile
 
-	def fullOutFile(self):
-		return self.outDir / self.outName
+	def fullOutFile_b5d_5d(self):
+		return self.outDir / (self.outName + "_b5d_5d.h5")
+
+	def fullOutFile_b5d_3d(self):
+		return self.outDir / (self.outName + "_b5d_3d.h5")
+
+	def fullOutFile_b3d(self):
+		return self.outDir / (self.outName + "_b3d.h5")
 
 
 class B5D_Compression_Test:
@@ -69,19 +75,22 @@ class B5D_Compression_Test:
 	def __init__(self, compression_attributes,
 		fileHandler):
 
-		self.inFile = fileHandler.fullInFile()
-		self.outFile = fileHandler.fullOutFile()
-		self.dataset_name = fileHandler.dataset_name
+		self.files = fileHandler
 		self.attrs = compression_attributes
+		self.original_file = None
 		self.workingDSet = None
 
 		
 	# open original dataset
-	def openInputFile(self, dset="imageData"):
+	# TODO: handle errors!
+	def setUpInputFile(self, dset=None):
 		"""Open input file and save a pointer to it"""
-		original_file = h5.File(self.inFile,'r')
+		if (dset is None):
+			dset = self.files.dataset_name
+
+		self.original_file = h5.File(self.files.fullInFile(),'r')
 		self.workingDSet = original_file[dset]
-		original_file.close()
+		# original_file.close()
 
 	# get subset of data if desired
 	def subsetDataByTrimingTimeDim(self,
@@ -93,14 +102,16 @@ class B5D_Compression_Test:
 		# pass
 
 	# save dataset as hdf5 with custom filter
-	def saveAsHDF5WithFilter(self, outFile,
+	def saveAsHDF5WithFilter(self, # outFile,
 		filter=FilterType.b5d):
 
 		if (filter is FilterType.b3d):
 			x,y,z,c,t = self.workingDSet.shape
 			localData=self.workingDSet.reshape(x,y,z*c*t)
+			outFile = self.files.fullOutFile_b3d()
 		else:
 			localData=self.workingDSet
+			outFile = self.files.fullOutFile_b5d_5d()
 
 		f = h5.File(outFile,'w')
 		dset = f.create_dataset(self.dataset_name,
@@ -118,36 +129,58 @@ class B5D_Compression_Test:
 		)
 		f.close()
 
-	def convertB5Dto3D(self, inFile, 
-		dataset_name, outFile):
-		f = h5.File(inFile,'r')
+	def convertB5Dto3D(self, inFile=None, dataset_name=None): #, 
+		# , outFile):
+		if (inFile is None):
+			inFile = self.files.fullOutFile_b5d_5d()
+		if (dataset_name is None):
+			dataset_name = self.dataset_name
+
 		if os.path.isfile(inFile):
 			f = h5.File(inFile,'r')
 		else:
 			sys.exit("There is not an existing B5D 5D dataset")
+
 		x,y,z,c,t = f[dataset_name].shape
 		localData = f[dataset_name].reshape(x,y,z*c*t)
-		out = h5.File(outFile,'w')
-		dset = out.create_dataset(self.dataset_name,
+		out = h5.File(self.files.fullOutFile_b5d_3d(),'w')
+		dset = out.create_dataset(dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
 			chunks=self.attrs.CHUNKS
 			)
 		f.close()
 		out.close()
 
-	def closeConnectionToOriginalFile(self):
-		pass
+	def tearDownInputFile(self):
+		self.original_file.close()
 
 
 
 if __name__=="__main__":
-	files = FileHandler(inDir="~/My/Random/Path",
-		inFile="myFile.mat")
-	print(files.outDir)
-	print(files.outName)
-	print(files.fullInFile())
-	print(files.dataset_name)
+	# set up paths
+	files = FileHandler(inDir="",inFile="")
 
-	atts = CompressionAttributes(CHUNKS=(2,2,1,2,2))
-	print(atts.CHUNKS)
+	# set up compression attributes
+	attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
+
+	# Initialize B5D_Compression_Test
+	comp = B5D_Compression_Test(attrs,files)
+	comp.setUpInputFile()
+	comp.subsetDataByTrimingTimeDim()
+	comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+	comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+	comp.convertB5Dto3D()
+	comp.tearDownInputFile()
+
+
+	# files = FileHandler(inDir="~/My/Random/Path",
+		# inFile="myFile.mat")
+	# print(files.outDir)
+	# print(files.outName)
+	# print(files.fullInFile())
+	# print(files.dataset_name)
+	# print(files.fullOutFile_b5d_3d())
+
+	# atts = CompressionAttributes(CHUNKS=(2,2,1,2,2))
+	# print(atts.CHUNKS)
 
