@@ -37,7 +37,7 @@ class FileHandler:
 	"""Defines file handling operations"""
 
 	def __init__(self, inDir, inFile, 
-		dataset_name="imageData", 
+		dataset_name="imagedata", 
 		outName=None, outDir=None):
 
 		self.inDir = pl.Path(inDir)
