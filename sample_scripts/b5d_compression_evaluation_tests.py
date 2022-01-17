@@ -136,7 +136,7 @@ class B5D_Compression_Test:
 		if (inFile is None):
 			inFile = self.files.fullOutFile_b5d_5d()
 		if (dataset_name is None):
-			dataset_name = self.dataset_name
+			dataset_name = self.files.dataset_name
 
 		if os.path.isfile(inFile):
 			f = h5.File(inFile,'r')
