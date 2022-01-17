@@ -109,14 +109,16 @@ class B5D_Compression_Test:
 			x,y,z,c,t = self.workingDSet.shape
 			localData=self.workingDSet.reshape(x,y,z*c*t)
 			outFile = self.files.fullOutFile_b3d()
+			CHUNKS=(181,181,1)
 		else:
 			localData=self.workingDSet
 			outFile = self.files.fullOutFile_b5d_5d()
+			CHUNKS=self.attrs.CHUNKS
 
 		f = h5.File(outFile,'w')
 		dset = f.create_dataset(self.files.dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
-			chunks=self.attrs.CHUNKS,
+			chunks=CHUNKS,
 			compression=filter.value,
 			compression_opts=(
 				round(self.attrs.quantization_step*1000), 
@@ -146,7 +148,7 @@ class B5D_Compression_Test:
 		out = h5.File(self.files.fullOutFile_b5d_3d(),'w')
 		dset = out.create_dataset(dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
-			chunks=self.attrs.CHUNKS
+			chunks=(181,181,1)
 			)
 		f.close()
 		out.close()
