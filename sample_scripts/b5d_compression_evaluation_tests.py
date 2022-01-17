@@ -144,7 +144,8 @@ class B5D_Compression_Test:
 			sys.exit("There is not an existing B5D 5D dataset")
 
 		x,y,z,c,t = f[dataset_name].shape
-		localData = f[dataset_name].reshape(x,y,z*c*t)
+		localData = f[dataset_name]
+		localData = localData[:,:,:,:,:].reshape(x,y,z*c*t)
 		out = h5.File(self.files.fullOutFile_b5d_3d(),'w')
 		dset = out.create_dataset(dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
