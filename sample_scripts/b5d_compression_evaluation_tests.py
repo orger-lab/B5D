@@ -109,6 +109,7 @@ class B5D_Compression_Test:
 			x,y,z,c,t = self.workingDSet.shape
 			localData=self.workingDSet.reshape(x,y,z*c*t)
 			outFile = self.files.fullOutFile_b3d()
+			# some magic numbers here, but easier than writing checks against None
 			CHUNKS=(181,181,1)
 		else:
 			localData=self.workingDSet
@@ -160,21 +161,40 @@ class B5D_Compression_Test:
 
 
 if __name__=="__main__":
-	# set up paths
-	files = FileHandler(inDir="F:/GCaMP_Comparisons/6fEF05/20200909-hUC-6fEF05-bars-fish-1-20p",
-		inFile="20200909-hUC-6fEF05-bars-fish-1-20p.mat")
+	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	outDir = pl.Path("D:/B5D_tests")
+	x = os.listdir(rootDir)
+	animalDirs = [z for z in x if z.endswith("20p")]
 
-	# set up compression attributes
-	attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
+	for animalDir in animalDirs:
+		matfiles = os.listdir(rootDir / animalDir)
+		matfile = [x for x in matfiles if x.endswith("20p.mat")]
+		inputFile = rootDir / animalDir / matfile[0]
+		rootFileName = matfile[0][0:-4]
+		outFile = outDir / rootFileName
+		print(inputFile)
 
-	# Initialize B5D_Compression_Test
-	comp = B5D_Compression_Test(attrs,files)
-	comp.setUpInputFile()
-	comp.subsetDataByTrimingTimeDim()
-	comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-	comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
-	comp.convertB5Dto3D()
-	comp.tearDownInputFile()
+		files = FileHandler(inDir=(rootDir / animalDir),inFile=matfile[0],
+			dataset_name="imagedata", outName=rootFileName, outDir=outDir)
+
+	# sys.exit("end")
+
+
+	# # set up paths
+	# files = FileHandler(inDir="F:/GCaMP_Comparisons/6fEF05/20200909-hUC-6fEF05-bars-fish-1-20p",
+	# 	inFile="20200909-hUC-6fEF05-bars-fish-1-20p.mat")
+
+		# set up compression attributes
+		attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
+
+		# Initialize B5D_Compression_Test
+		comp = B5D_Compression_Test(attrs,files)
+		comp.setUpInputFile()
+		comp.subsetDataByTrimingTimeDim()
+		comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+		comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+		comp.convertB5Dto3D()
+		comp.tearDownInputFile()
 
 
 	# files = FileHandler(inDir="~/My/Random/Path",
