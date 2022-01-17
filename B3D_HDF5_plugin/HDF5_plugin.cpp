@@ -256,8 +256,6 @@ extern "C" {
 			delete pShared;
 		}
 
-		// TODO: Either update all subsequent functions for 5D,
-		//       or flatten the 5D representation to a big 3D representation
 
 		uint newZ = values[N_CD_VALUES + 2] * 
 					values[N_CD_VALUES + 3] * 
