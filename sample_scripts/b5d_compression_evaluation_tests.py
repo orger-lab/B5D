@@ -89,7 +89,7 @@ class B5D_Compression_Test:
 			dset = self.files.dataset_name
 
 		self.original_file = h5.File(self.files.fullInFile(),'r')
-		self.workingDSet = original_file[dset]
+		self.workingDSet = self.original_file[dset]
 		# original_file.close()
 
 	# get subset of data if desired
@@ -114,7 +114,7 @@ class B5D_Compression_Test:
 			outFile = self.files.fullOutFile_b5d_5d()
 
 		f = h5.File(outFile,'w')
-		dset = f.create_dataset(self.dataset_name,
+		dset = f.create_dataset(self.files.dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
 			chunks=self.attrs.CHUNKS,
 			compression=filter.value,
@@ -158,7 +158,8 @@ class B5D_Compression_Test:
 
 if __name__=="__main__":
 	# set up paths
-	files = FileHandler(inDir="",inFile="")
+	files = FileHandler(inDir="F:/GCaMP_Comparisons/6fEF05/20200909-hUC-6fEF05-bars-fish-1-20p",
+		inFile="20200909-hUC-6fEF05-bars-fish-1-20p.mat")
 
 	# set up compression attributes
 	attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
