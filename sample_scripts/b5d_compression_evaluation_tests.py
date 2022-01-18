@@ -159,7 +159,6 @@ class B5D_Compression_Test:
 		self.original_file.close()
 
 
-
 if __name__=="__main__":
 	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
 	outDir = pl.Path("D:/B5D_tests")
@@ -177,13 +176,6 @@ if __name__=="__main__":
 		files = FileHandler(inDir=(rootDir / animalDir),inFile=matfile[0],
 			dataset_name="imagedata", outName=rootFileName, outDir=outDir)
 
-	# sys.exit("end")
-
-
-	# # set up paths
-	# files = FileHandler(inDir="F:/GCaMP_Comparisons/6fEF05/20200909-hUC-6fEF05-bars-fish-1-20p",
-	# 	inFile="20200909-hUC-6fEF05-bars-fish-1-20p.mat")
-
 		# set up compression attributes
 		attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
 
@@ -195,6 +187,23 @@ if __name__=="__main__":
 		comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
 		comp.convertB5Dto3D()
 		comp.tearDownInputFile()
+
+	#################
+	# test chunking #
+	#################
+	rootDir = ""
+	animalDir = ""
+	rootFileName = ""
+	for x in (1,2,4):
+		for z in (1,10,20):
+			for t in (1,5,10):
+				file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
+				attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
+				files = FileHandler(inDir=(rootDir / animalDir),
+					inFile=matfile[0],
+					dataset_name="imagedata", 
+					outName=rootFileName + file_suffix, 
+					outDir=(outDir / "chunk_tests"))
 
 
 	# files = FileHandler(inDir="~/My/Random/Path",
