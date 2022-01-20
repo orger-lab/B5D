@@ -165,45 +165,83 @@ if __name__=="__main__":
 	x = os.listdir(rootDir)
 	animalDirs = [z for z in x if z.endswith("20p")]
 
-	for animalDir in animalDirs:
-		matfiles = os.listdir(rootDir / animalDir)
-		matfile = [x for x in matfiles if x.endswith("20p.mat")]
-		inputFile = rootDir / animalDir / matfile[0]
-		rootFileName = matfile[0][0:-4]
-		outFile = outDir / rootFileName
-		print(inputFile)
+	# for animalDir in animalDirs:
+	# 	matfiles = os.listdir(rootDir / animalDir)
+	# 	matfile = [x for x in matfiles if x.endswith("20p.mat")]
+	# 	inputFile = rootDir / animalDir / matfile[0]
+	# 	rootFileName = matfile[0][0:-4]
+	# 	outFile = outDir / rootFileName
+	# 	print(inputFile)
 
-		files = FileHandler(inDir=(rootDir / animalDir),inFile=matfile[0],
-			dataset_name="imagedata", outName=rootFileName, outDir=outDir)
+	# 	files = FileHandler(inDir=(rootDir / animalDir),inFile=matfile[0],
+	# 		dataset_name="imagedata", outName=rootFileName, 
+	# 		outDir=(outDir / "multi-file_truncated_to_30_volumes"))
 
-		# set up compression attributes
-		attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
+	# 	# set up compression attributes
+	# 	attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
 
-		# Initialize B5D_Compression_Test
-		comp = B5D_Compression_Test(attrs,files)
-		comp.setUpInputFile()
-		comp.subsetDataByTrimingTimeDim()
-		comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-		comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
-		comp.convertB5Dto3D()
-		comp.tearDownInputFile()
+	# 	# Initialize B5D_Compression_Test
+	# 	comp = B5D_Compression_Test(attrs,files)
+	# 	comp.setUpInputFile()
+	# 	comp.subsetDataByTrimingTimeDim()
+	# 	comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+	# 	comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+	# 	comp.convertB5Dto3D()
+	# 	comp.tearDownInputFile()
 
 	#################
 	# test chunking #
 	#################
-	rootDir = ""
-	animalDir = ""
-	rootFileName = ""
-	for x in (1,2,4):
-		for z in (1,10,20):
-			for t in (1,5,10):
-				file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
-				attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
-				files = FileHandler(inDir=(rootDir / animalDir),
-					inFile=matfile[0],
-					dataset_name="imagedata", 
-					outName=rootFileName + file_suffix, 
-					outDir=(outDir / "chunk_tests"))
+	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	animalDir = animalDirs[0]
+	matfile = "20200909-hUC-6fEF05-bars-fish-1-20p.mat"
+	rootFileName = "20200909-hUC-6fEF05-bars-fish-1-20p"
+	z = 20
+	x = 4
+	y = 4
+	c = 1
+	t = 1
+
+	file_suffix = "_xy-" + str(x) + "_z-" + str(z) + "_t-" + str(t) + "_test"
+	attrs = CompressionAttributes(CHUNKS=(x,y,z,1,t))
+	files = FileHandler(inDir=(rootDir / animalDir),
+		inFile=matfile,
+		dataset_name="imagedata", 
+		outName=rootFileName + file_suffix, 
+		outDir=(outDir / "chunk_tests"))
+	comp = B5D_Compression_Test(attrs,files)
+	comp.setUpInputFile()
+	comp.subsetDataByTrimingTimeDim()
+	comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+	comp.tearDownInputFile()
+
+	f = h5.File(files.fullOutFile_b5d_5d(),'r')
+	testpoint = f['imagedata'][0,0,0,0,0]
+	print(testpoint)
+	f.close()
+	sys.exit("We survied!")
+
+
+	for x in (1,2): # x = 4 didn't work
+		# for z in (1,10,20): # z > 1 didn't work
+		for t in (1,5,10):
+			file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
+			attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
+			files = FileHandler(inDir=(rootDir / animalDir),
+				inFile=matfile,
+				dataset_name="imagedata", 
+				outName=rootFileName + file_suffix, 
+				outDir=(outDir / "chunk_tests"))
+			if os.path.isfile(files.fullOutFile_b5d_5d()):
+				print("skipping")
+			else:
+				comp = B5D_Compression_Test(attrs,files)
+				comp.setUpInputFile()
+				comp.subsetDataByTrimingTimeDim()
+				comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+				comp.tearDownInputFile()
+
+
 
 
 	# files = FileHandler(inDir="~/My/Random/Path",
