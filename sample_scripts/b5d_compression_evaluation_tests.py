@@ -10,6 +10,7 @@ from enum import Enum
 class FilterType(Enum):
 	b3d = 32016
 	b5d = 32666
+	zlib = 2
 
 
 class CompressionAttributes:
@@ -56,6 +57,7 @@ class FileHandler:
 
 		self.dataset_name = dataset_name
 
+	# @property
 	def fullInFile(self):
 		return self.inDir / self.inFile
 
@@ -67,6 +69,9 @@ class FileHandler:
 
 	def fullOutFile_b3d(self):
 		return self.outDir / (self.outName + "_b3d.h5")
+
+	def fullOutFile_noFilter(self):
+		return self.outDir / (self.outName + "_noFilter.h5")
 
 
 class B5D_Compression_Test:
@@ -117,20 +122,39 @@ class B5D_Compression_Test:
 			CHUNKS=self.attrs.CHUNKS
 
 		f = h5.File(outFile,'w')
+
+		if (filter is FilterType.zlib):
+			dset = f.create_dataset(self.files.dataset_name,
+				data=np.asarray(localData,dtype='uint16'),
+				chunks=CHUNKS,compression=filter.value)
+		else:
+			dset = f.create_dataset(self.files.dataset_name,
+				data=np.asarray(localData,dtype='uint16'),
+				chunks=CHUNKS,
+				compression=filter.value,
+				compression_opts=(
+					round(self.attrs.quantization_step*1000), 
+					self.attrs.compression_mode, 
+					round(self.attrs.CONVERSION*1000), 
+					self.attrs.BACKGROUND_LEVEL, 
+					round(self.attrs.READ_NOISE*1000),
+					self.attrs.tile_size
+					)
+			)
+
+		f.close()
+
+	def saveAsHDF5WithoutFilter(self,compression=2):
+
+		localData=self.workingDSet
+		outFile = self.files.fullOutFile_noFilter()
+		CHUNKS = None
+		f = h5.File(outFile,'w')
 		dset = f.create_dataset(self.files.dataset_name,
 			data=np.asarray(localData,dtype='uint16'),
-			chunks=CHUNKS,
-			compression=filter.value,
-			compression_opts=(
-				round(self.attrs.quantization_step*1000), 
-				self.attrs.compression_mode, 
-				round(self.attrs.CONVERSION*1000), 
-				self.attrs.BACKGROUND_LEVEL, 
-				round(self.attrs.READ_NOISE*1000),
-				self.attrs.tile_size
-				)
-		)
+			chunks=CHUNKS,compression=compression)
 		f.close()
+
 
 	def convertB5Dto3D(self, inFile=None, dataset_name=None): #, 
 		# , outFile):
@@ -196,11 +220,64 @@ if __name__=="__main__":
 	animalDir = animalDirs[0]
 	matfile = "20200909-hUC-6fEF05-bars-fish-1-20p.mat"
 	rootFileName = "20200909-hUC-6fEF05-bars-fish-1-20p"
-	z = 20
-	x = 4
-	y = 4
+	z = 1
+	x = 181
+	y = 181
 	c = 1
 	t = 1
+
+
+	#####################
+	# Compression Modes #
+	#####################
+
+	for mode in range(1,3):
+		for ql in range(1,6):
+			# mode = 2
+
+			file_suffix = "_mode-" + str(mode) + "_quant_level-" + str(ql)
+			attrs = CompressionAttributes(
+				CHUNKS=(x,y,z,c,t),
+				quantization_step=ql,
+				compression_mode=mode
+				)
+			files = FileHandler(inDir=(rootDir / animalDir),
+				inFile=matfile,
+				dataset_name="imagedata", 
+				outName=rootFileName + file_suffix, 
+				outDir=(outDir / "mode_quant-level_tests"))
+			comp = B5D_Compression_Test(attrs,files)
+			comp.setUpInputFile()
+			comp.subsetDataByTrimingTimeDim()
+			comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+			comp.tearDownInputFile()
+			# sys.exit("exit early")
+
+	sys.exit("finished mode and quant level tests")
+
+
+
+
+	count = 1
+
+	for i in range(10):
+		file_suffix = "_CREATE" + str(count)
+		attrs = CompressionAttributes(CHUNKS=None)
+		files = FileHandler(inDir=(rootDir / animalDir),
+			inFile=matfile,
+			dataset_name="imagedata", 
+			outName=rootFileName + file_suffix, 
+			outDir=(outDir / "chunk_tests"))
+		comp = B5D_Compression_Test(attrs,files)
+		comp.setUpInputFile()
+		comp.subsetDataByTrimingTimeDim()
+		comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+		# comp.saveAsHDF5WithoutFilter()
+		comp.tearDownInputFile()
+		count = count + 1
+
+	sys.exit("finished without crashing")
+
 
 	file_suffix = "_xy-" + str(x) + "_z-" + str(z) + "_t-" + str(t) + "_test"
 	attrs = CompressionAttributes(CHUNKS=(x,y,z,1,t))
@@ -219,7 +296,7 @@ if __name__=="__main__":
 	testpoint = f['imagedata'][0,0,0,0,0]
 	print(testpoint)
 	f.close()
-	sys.exit("We survied!")
+	sys.exit("We survived!")
 
 
 	for x in (1,2): # x = 4 didn't work

@@ -10,9 +10,9 @@ import time
 file_order = []
 time_to_load = []
 
-inputDir = pl.Path("D:/B5D_tests/chunk_tests")
+inputDir = pl.Path("D:/B5D_tests/mode_quant-level_tests")
 files = os.listdir(inputDir)
-for f in files:
+for f in [x for x in files if x.endswith("5d.h5")]:
 	print(f)
 	file_order.append(f)
 	start = time.time()
