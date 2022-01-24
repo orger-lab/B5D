@@ -49,13 +49,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\HDF_Group\HDF5\1.8.21\lib;C:\Program Files\HDF_Group\HDF5\1.8.21\include;C:\Users\Aaron\source\repos\b5d_cuda\b5d_cuda\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\HDF_Group\HDF5\1.10.8\lib;C:\Program Files\HDF_Group\HDF5\1.10.8\include;C:\Users\Aaron\source\repos\b5d_cuda\b5d_cuda\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;szip.lib;zlib.lib;hdf5.lib;hdf5_cpp.lib;libhdf5_cpp.lib;hdf5_hl.lib;hdf5_hl_cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\HDF_Group\HDF5\1.8.21\lib;C:\Program Files\HDF_Group\HDF5\1.8.21\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libsz.lib;libzlib.lib;hdf5.lib;hdf5_cpp.lib;libhdf5_cpp.lib;hdf5_hl.lib;hdf5_hl_cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\HDF_Group\HDF5\1.10.8\lib;C:\Program Files\HDF_Group\HDF5\1.10.8\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
