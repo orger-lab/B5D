@@ -154,13 +154,13 @@ bool GPUResources::create(const Config& config)
     //TODO don't use cudaSafeCall, but manually check for out of memory?
     assert(m_dpBuffer == nullptr);
     cudaSafeCall(cudaMalloc(&m_dpBuffer, m_config.bufferSize));
-	fprintf(stderr, "CREATE!\n");
+	fprintf(stderr, "CREATE!\n"); // Aaron edit!
     return true;
 }
 
 void GPUResources::destroy()
 {
-	fprintf(stderr, "DESTROY\n");
+	fprintf(stderr, "DESTROY\n"); // Aaron edit!
     cudaSafeCall(cudaFree(m_dpBuffer));
     m_dpBuffer = nullptr;
 
