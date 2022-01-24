@@ -5,6 +5,10 @@
 
 #include "cudaUtil.h"
 
+#include <iostream>
+using std::endl;
+#include <fstream>
+using std::ofstream;
 
 Resources::Config::Config()
     : cudaDevice(-1), blockCountMax(0), elemCountPerBlockMax(0), codingBlockSize(0), log2HuffmanDistinctSymbolCountMax(0), bufferSize(0)
@@ -65,9 +69,9 @@ Resources::~Resources()
 byte* Resources::getByteBuffer(size_t bytes)
 {
 	// Aaron caveman debugging
-	// fprintf(stderr, "m_bufferOffset: %d\n", m_bufferOffset);
-	// fprintf(stderr, "bytes: %d\n", bytes);
-	// fprintf(stderr, "m_config.bufferSize: %d\n", m_config.bufferSize);
+	 //fprintf(stderr, "m_bufferOffset: %d\n", m_bufferOffset);
+	 //fprintf(stderr, "bytes: %d\n", bytes);
+	 //fprintf(stderr, "m_config.bufferSize: %d\n", m_config.bufferSize);
 	assert(m_bufferOffset + bytes <= m_config.bufferSize);
 	if (m_bufferOffset + bytes > m_config.bufferSize) {
 		printf("ERROR: Resources::getByteBuffer: out of memory!\n");
@@ -141,7 +145,8 @@ bool GPUResources::create(const Config& config)
     m_config = config;
 
     assert(m_pCuCompInstance == nullptr);
-    m_pCuCompInstance = cudaCompress::createInstance(m_config.cudaDevice, m_config.blockCountMax, m_config.elemCountPerBlockMax, m_config.codingBlockSize, m_config.log2HuffmanDistinctSymbolCountMax);
+    m_pCuCompInstance = cudaCompress::createInstance(m_config.cudaDevice, m_config.blockCountMax,
+		m_config.elemCountPerBlockMax, m_config.codingBlockSize, m_config.log2HuffmanDistinctSymbolCountMax);
     if(!m_pCuCompInstance) {
         return false;
     }
@@ -149,12 +154,13 @@ bool GPUResources::create(const Config& config)
     //TODO don't use cudaSafeCall, but manually check for out of memory?
     assert(m_dpBuffer == nullptr);
     cudaSafeCall(cudaMalloc(&m_dpBuffer, m_config.bufferSize));
-
+	fprintf(stderr, "CREATE!\n");
     return true;
 }
 
 void GPUResources::destroy()
 {
+	fprintf(stderr, "DESTROY\n");
     cudaSafeCall(cudaFree(m_dpBuffer));
     m_dpBuffer = nullptr;
 

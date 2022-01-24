@@ -288,6 +288,7 @@ extern "C" {
 
 		// Aaron caveman debugging:
 		// fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", (values[5]));
+		fprintf(stderr, "Compression mode: %d\n", (values[1]));
 
 		return 1;
 	}
