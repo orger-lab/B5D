@@ -236,8 +236,6 @@ if __name__=="__main__":
 		outfile.close()
 		infile.close()
 
-
-
 	sys.exit("first test finished")
 
 	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
