@@ -184,6 +184,62 @@ class B5D_Compression_Test:
 
 
 if __name__=="__main__":
+	# oop tests
+
+	inputDir = pl.Path(r"D:\B5D_tests\input")
+	print(inputDir)
+
+	inputFiles = os.listdir(inputDir)
+
+	print("Start object oriented file handling")
+	file_suffix = "_oop_test"
+	outDir = pl.Path(r"D:\B5D_tests")
+
+	for f in inputFiles:
+		matfile=inputDir / f
+		rootFileName = f[0:-4]
+		print(matfile)
+		attrs = CompressionAttributes(
+			CHUNKS=(181,181,1,1,10),
+			quantization_step=1,
+			compression_mode=1
+			)
+		files = FileHandler(inDir=inputDir ,
+			inFile=matfile,
+			dataset_name="imagedata", 
+			outName=rootFileName + file_suffix, 
+			outDir=(outDir / "oop_tests"))
+		comp = B5D_Compression_Test(attrs,files)
+		comp.setUpInputFile()
+		# comp.subsetDataByTrimingTimeDim()
+		comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+		comp.tearDownInputFile()
+
+	print("oop tests have finished\n\n")
+
+	for f in inputFiles:
+		matfile=inputDir / f
+		rootFileName = f[0:-4]
+		print(matfile)
+		print(rootFileName)
+		print("START")
+		outfile = h5.File((outDir / "oop_tests" / (rootFileName + "_no_oop.h5")),'w')
+		infile = h5.File(matfile,'r')
+		localdata = infile['imagedata']#[:,:,:,:,slice(0,30)]
+		dset = outfile.create_dataset('imagedata',
+			data=np.asarray(localdata,dtype='uint16'),
+			chunks=(181,181,1,1,10),
+			compression=32666,
+			compression_opts=(round(1000),1,round(2.1845*1000),399,round(1.6*1000))
+			)
+		print("END")
+		outfile.close()
+		infile.close()
+
+
+
+	sys.exit("first test finished")
+
 	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
 	outDir = pl.Path("D:/B5D_tests")
 	x = os.listdir(rootDir)
@@ -232,7 +288,7 @@ if __name__=="__main__":
 	#####################
 
 	for mode in range(1,3):
-		for ql in range(1,6):
+		for ql in range(1,3):
 			# mode = 2
 
 			file_suffix = "_mode-" + str(mode) + "_quant_level-" + str(ql)
@@ -249,7 +305,7 @@ if __name__=="__main__":
 			comp = B5D_Compression_Test(attrs,files)
 			comp.setUpInputFile()
 			comp.subsetDataByTrimingTimeDim()
-			comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
 			comp.tearDownInputFile()
 			# sys.exit("exit early")
 
