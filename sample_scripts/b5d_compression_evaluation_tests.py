@@ -182,6 +182,24 @@ class B5D_Compression_Test:
 	def tearDownInputFile(self):
 		self.original_file.close()
 
+class chunkingLoop:
+	"""A class to loop through chunking parameters, because I'm tired of 
+	writing the same thing a million times"""
+
+	def __init__(self, inDir, matfile, file_suffix, outDir):
+		self.attrs = CompressionAttributes(
+			CHUNKS=(x,y,z,c,t),
+			quantization_step=ql,
+			compression_mode=mode
+			)
+		self.files = FileHandler(inDir=inDir),
+			inFile=matfile,
+			dataset_name="imagedata", 
+			outName=matfile[0:-4] + file_suffix, 
+			outDir=(outDir / "chunk_tests")
+			)
+
+
 
 if __name__=="__main__":
 	# oop tests
