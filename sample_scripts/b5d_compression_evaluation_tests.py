@@ -192,7 +192,7 @@ class chunkingLoop:
 			quantization_step=ql,
 			compression_mode=mode
 			)
-		self.files = FileHandler(inDir=inDir),
+		self.files = FileHandler(inDir=inDir,
 			inFile=matfile,
 			dataset_name="imagedata", 
 			outName=matfile[0:-4] + file_suffix, 
@@ -202,7 +202,40 @@ class chunkingLoop:
 
 
 if __name__=="__main__":
-	# oop tests
+
+
+	# rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	# outDir = pl.Path("D:/B5D_tests")
+	# x = os.listdir(rootDir)
+	# animalDirs = [z for z in x if z.endswith("20p")]
+	# animalDir = animalDirs[0]
+
+	# z=1
+	# for x in (1,2): # x = 4 didn't work
+	# # for z in (1,10,20): # z > 1 didn't work
+	# 	for t in (1,5,10):
+	# 		file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
+	# 		attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
+	# 		files = FileHandler(inDir=(rootDir / animalDir),
+	# 			inFile=matfile,
+	# 			dataset_name="imagedata", 
+	# 			outName=rootFileName + file_suffix, 
+	# 			outDir=(outDir / "chunk_tests"))
+	# 		if os.path.isfile(files.fullOutFile_b5d_5d()):
+	# 			print("skipping")
+	# 		else:
+	# 			comp = B5D_Compression_Test(attrs,files)
+	# 			comp.setUpInputFile()
+	# 			comp.subsetDataByTrimingTimeDim()
+	# 			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+	# 			comp.tearDownInputFile()
+
+
+
+
+	#############
+	# oop tests #
+	#############
 
 	inputDir = pl.Path(r"D:\B5D_tests\input")
 	print(inputDir)
@@ -210,7 +243,7 @@ if __name__=="__main__":
 	inputFiles = os.listdir(inputDir)
 
 	print("Start object oriented file handling")
-	file_suffix = "_oop_test"
+	file_suffix = "_oop_test_truncated"
 	outDir = pl.Path(r"D:\B5D_tests")
 
 	for f in inputFiles:
@@ -229,9 +262,10 @@ if __name__=="__main__":
 			outDir=(outDir / "oop_tests"))
 		comp = B5D_Compression_Test(attrs,files)
 		comp.setUpInputFile()
-		# comp.subsetDataByTrimingTimeDim()
+		comp.subsetDataByTrimingTimeDim()
 		comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
 		comp.tearDownInputFile()
+		sys.exit("done!")
 
 	print("oop tests have finished\n\n")
 
@@ -255,6 +289,11 @@ if __name__=="__main__":
 		infile.close()
 
 	sys.exit("first test finished")
+
+	#### END ####
+	# oop tests #
+	#############
+
 
 	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
 	outDir = pl.Path("D:/B5D_tests")
@@ -369,26 +408,6 @@ if __name__=="__main__":
 	print(testpoint)
 	f.close()
 	sys.exit("We survived!")
-
-
-	for x in (1,2): # x = 4 didn't work
-		# for z in (1,10,20): # z > 1 didn't work
-		for t in (1,5,10):
-			file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
-			attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
-			files = FileHandler(inDir=(rootDir / animalDir),
-				inFile=matfile,
-				dataset_name="imagedata", 
-				outName=rootFileName + file_suffix, 
-				outDir=(outDir / "chunk_tests"))
-			if os.path.isfile(files.fullOutFile_b5d_5d()):
-				print("skipping")
-			else:
-				comp = B5D_Compression_Test(attrs,files)
-				comp.setUpInputFile()
-				comp.subsetDataByTrimingTimeDim()
-				comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-				comp.tearDownInputFile()
 
 
 
