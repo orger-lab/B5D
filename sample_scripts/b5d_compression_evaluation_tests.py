@@ -200,7 +200,7 @@ if __name__=="__main__":
 		rootFileName = f[0:-4]
 		print(matfile)
 		attrs = CompressionAttributes(
-			CHUNKS=(181,181,1,1,10),
+			CHUNKS=(362,181,1,1,10),
 			quantization_step=1,
 			compression_mode=1
 			)
@@ -228,7 +228,7 @@ if __name__=="__main__":
 		localdata = infile['imagedata']#[:,:,:,:,slice(0,30)]
 		dset = outfile.create_dataset('imagedata',
 			data=np.asarray(localdata,dtype='uint16'),
-			chunks=(181,181,1,1,10),
+			chunks=(362,181,1,1,10),
 			compression=32666,
 			compression_opts=(round(1000),1,round(2.1845*1000),399,round(1.6*1000))
 			)

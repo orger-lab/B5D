@@ -10,15 +10,15 @@ import time
 file_order = []
 time_to_load = []
 
-inputDir = pl.Path("D:/B5D_tests/mode_quant-level_tests")
+inputDir = pl.Path("D:/B5D_tests/oop_tests")
 files = os.listdir(inputDir)
-for f in [x for x in files if x.endswith("5d.h5")]:
+for f in files:
 	print(f)
 	file_order.append(f)
 	start = time.time()
 	loop_file = h5.File((inputDir / f),'r')
 	dset = loop_file['imagedata']
-	retreived_data_xy = dset[:,:,0,0,0]
+	retreived_data_xy = dset[:,:,0,0,2:450]
 	end = time.time()
 	difference = end - start
 	print(difference)
