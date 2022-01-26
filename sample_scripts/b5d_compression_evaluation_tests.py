@@ -204,31 +204,35 @@ class chunkingLoop:
 if __name__=="__main__":
 
 
-	# rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
-	# outDir = pl.Path("D:/B5D_tests")
-	# x = os.listdir(rootDir)
-	# animalDirs = [z for z in x if z.endswith("20p")]
-	# animalDir = animalDirs[0]
+	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	outDir = pl.Path("D:/B5D_tests")
+	x = os.listdir(rootDir)
+	animalDirs = [z for z in x if z.endswith("20p")]
+	animalDir = animalDirs[0]
 
-	# z=1
-	# for x in (1,2): # x = 4 didn't work
-	# # for z in (1,10,20): # z > 1 didn't work
-	# 	for t in (1,5,10):
-	# 		file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
-	# 		attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
-	# 		files = FileHandler(inDir=(rootDir / animalDir),
-	# 			inFile=matfile,
-	# 			dataset_name="imagedata", 
-	# 			outName=rootFileName + file_suffix, 
-	# 			outDir=(outDir / "chunk_tests"))
-	# 		if os.path.isfile(files.fullOutFile_b5d_5d()):
-	# 			print("skipping")
-	# 		else:
-	# 			comp = B5D_Compression_Test(attrs,files)
-	# 			comp.setUpInputFile()
-	# 			comp.subsetDataByTrimingTimeDim()
-	# 			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-	# 			comp.tearDownInputFile()
+	inFile = pl.Path(r"D:\B5D_tests\input\20211018_hUC-6fEF05_fish-2-1_bar-20p.mat")
+
+	z=1
+	for x in (1,2): # x = 4 didn't work
+	# for z in (1,10,20): # z > 1 didn't work
+		for t in (1,5,10):
+			file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
+			attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
+			files = FileHandler(inDir=inFile.parent,
+				inFile=inFile.name,
+				dataset_name="imagedata", 
+				outName=inFile.name[0:-4] + file_suffix, 
+				outDir=(outDir / "chunk_tests_1.10.8_release"))
+			if os.path.isfile(files.fullOutFile_b5d_5d()):
+				print("skipping")
+			else:
+				comp = B5D_Compression_Test(attrs,files)
+				comp.setUpInputFile()
+				comp.subsetDataByTrimingTimeDim(slice(1,100))
+				comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+				comp.tearDownInputFile()
+
+	sys.exit("test finished")
 
 
 
