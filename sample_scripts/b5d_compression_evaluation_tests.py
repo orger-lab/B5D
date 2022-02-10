@@ -203,6 +203,44 @@ class chunkingLoop:
 
 if __name__=="__main__":
 
+	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	outDir = pl.Path("D:/B5D_tests")
+	x = os.listdir(rootDir)
+	animalDirs = [z for z in x if z.endswith("20p")]
+
+	for animalDir in animalDirs:
+		matfiles = os.listdir(rootDir / animalDir)
+		matfile = [x for x in matfiles if x.endswith("20p.mat")]
+		inputFile = rootDir / animalDir / matfile[0]
+		rootFileName = matfile[0][0:-4]
+		outFile = outDir / rootFileName
+		print(inputFile)
+
+
+		for ql in (0,1,2,3,4,5):
+			suffix = "_quant_level-" + str(ql)
+			files = FileHandler(
+				inDir=(rootDir / animalDir),
+				inFile=matfile[0],
+				dataset_name="imagedata", 
+				outName=rootFileName + suffix, 
+				outDir=(outDir / "multi-file-multi-quant"))
+
+			# set up compression attributes
+			attrs = CompressionAttributes(
+				CHUNKS=(181 * 2,181,1,1,1),
+				quantization_step=ql,
+				compression_mode=1)
+
+			# Initialize B5D_Compression_Test
+			comp = B5D_Compression_Test(attrs,files)
+			comp.setUpInputFile()
+			comp.subsetDataByTrimingTimeDim(slice(1,501))
+			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+			# comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
+			# comp.convertB5Dto3D()
+			comp.tearDownInputFile()
+
 
 	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
 	outDir = pl.Path("D:/B5D_tests")
@@ -212,10 +250,52 @@ if __name__=="__main__":
 
 	inFile = pl.Path(r"D:\B5D_tests\input\20211018_hUC-6fEF05_fish-2-1_bar-20p.mat")
 
+
+	#####################
+	# Compression Modes #
+	#####################
+	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
+	animalDir = animalDirs[0]
+	matfile = "20200909-hUC-6fEF05-bars-fish-1-20p.mat"
+	rootFileName = "20200909-hUC-6fEF05-bars-fish-1-20p"
+
+
+	z = 1
+	x = 181 * 2
+	y = 181
+	c = 1
+	t = 1
+
+
+	for mode in range(1,3):
+		for ql in (3,4): #range(1,3):
+			# mode = 2
+
+			file_suffix = "_mode-" + str(mode) + "_quant_level-" + str(ql)
+			attrs = CompressionAttributes(
+				CHUNKS=(x,y,z,c,t),
+				quantization_step=ql,
+				compression_mode=mode
+				)
+			files = FileHandler(inDir=(rootDir / animalDir),
+				inFile=matfile,
+				dataset_name="imagedata", 
+				outName=rootFileName + file_suffix, 
+				outDir=(outDir / "mode_quant-level_tests"))
+			comp = B5D_Compression_Test(attrs,files)
+			comp.setUpInputFile()
+			comp.subsetDataByTrimingTimeDim(slice(1,101))
+			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
+			comp.tearDownInputFile()
+		sys.exit("exit after mode 1")
+
+	sys.exit("finished mode and quant level tests")
+
+
 	z=1
 	for x in (1,2): # x = 4 didn't work
 	# for z in (1,10,20): # z > 1 didn't work
-		for t in (1,5,10):
+		for t in (1,5):
 			file_suffix = "_xy-" + str(181*x) + "_z-" + str(z) + "_t-" + str(t)
 			attrs = CompressionAttributes(CHUNKS=((x * 181),(x * 181),z,1,t))
 			files = FileHandler(inDir=inFile.parent,
@@ -228,7 +308,7 @@ if __name__=="__main__":
 			else:
 				comp = B5D_Compression_Test(attrs,files)
 				comp.setUpInputFile()
-				comp.subsetDataByTrimingTimeDim(slice(1,100))
+				comp.subsetDataByTrimingTimeDim(slice(1,501))
 				comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
 				comp.tearDownInputFile()
 
@@ -299,34 +379,7 @@ if __name__=="__main__":
 	#############
 
 
-	rootDir = pl.Path("F:/GCaMP_Comparisons/6fEF05/")
-	outDir = pl.Path("D:/B5D_tests")
-	x = os.listdir(rootDir)
-	animalDirs = [z for z in x if z.endswith("20p")]
 
-	# for animalDir in animalDirs:
-	# 	matfiles = os.listdir(rootDir / animalDir)
-	# 	matfile = [x for x in matfiles if x.endswith("20p.mat")]
-	# 	inputFile = rootDir / animalDir / matfile[0]
-	# 	rootFileName = matfile[0][0:-4]
-	# 	outFile = outDir / rootFileName
-	# 	print(inputFile)
-
-	# 	files = FileHandler(inDir=(rootDir / animalDir),inFile=matfile[0],
-	# 		dataset_name="imagedata", outName=rootFileName, 
-	# 		outDir=(outDir / "multi-file_truncated_to_30_volumes"))
-
-	# 	# set up compression attributes
-	# 	attrs = CompressionAttributes(CHUNKS=(181,181,1,1,1))
-
-	# 	# Initialize B5D_Compression_Test
-	# 	comp = B5D_Compression_Test(attrs,files)
-	# 	comp.setUpInputFile()
-	# 	comp.subsetDataByTrimingTimeDim()
-	# 	comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-	# 	comp.saveAsHDF5WithFilter(filter=FilterType.b3d)
-	# 	comp.convertB5Dto3D()
-	# 	comp.tearDownInputFile()
 
 	#################
 	# test chunking #
@@ -342,33 +395,6 @@ if __name__=="__main__":
 	t = 1
 
 
-	#####################
-	# Compression Modes #
-	#####################
-
-	for mode in range(1,3):
-		for ql in range(1,3):
-			# mode = 2
-
-			file_suffix = "_mode-" + str(mode) + "_quant_level-" + str(ql)
-			attrs = CompressionAttributes(
-				CHUNKS=(x,y,z,c,t),
-				quantization_step=ql,
-				compression_mode=mode
-				)
-			files = FileHandler(inDir=(rootDir / animalDir),
-				inFile=matfile,
-				dataset_name="imagedata", 
-				outName=rootFileName + file_suffix, 
-				outDir=(outDir / "mode_quant-level_tests"))
-			comp = B5D_Compression_Test(attrs,files)
-			comp.setUpInputFile()
-			comp.subsetDataByTrimingTimeDim()
-			comp.saveAsHDF5WithFilter(filter=FilterType.b5d)
-			comp.tearDownInputFile()
-			# sys.exit("exit early")
-
-	sys.exit("finished mode and quant level tests")
 
 
 
