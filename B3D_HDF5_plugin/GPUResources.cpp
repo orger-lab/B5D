@@ -6,9 +6,9 @@
 #include "cudaUtil.h"
 
 #include <iostream>
-using std::endl;
-#include <fstream>
-using std::ofstream;
+//using std::endl;
+//#include <fstream>
+//using std::ofstream;
 
 Resources::Config::Config()
     : cudaDevice(-1), blockCountMax(0), elemCountPerBlockMax(0), codingBlockSize(0), log2HuffmanDistinctSymbolCountMax(0), bufferSize(0)
@@ -64,6 +64,7 @@ Resources::~Resources()
 {
     assert(m_pCuCompInstance == nullptr);
     assert(m_dpBuffer == nullptr);
+	fprintf(stderr, "deconstructor of GPUResources\n"); // Aaron edit!!!
 }
 
 byte* Resources::getByteBuffer(size_t bytes)
@@ -102,6 +103,7 @@ void Resources::releaseBuffer()
 
 void Resources::releaseBuffers(uint bufferCount)
 {
+	//fprintf(stderr, "in releaseBuffers, bufferCount: %d\n", bufferCount);
 	for (uint i = 0; i < bufferCount; i++) {
 		releaseBuffer();
 	}
@@ -144,6 +146,8 @@ bool GPUResources::create(const Config& config)
 {
     m_config = config;
 
+	fprintf(stderr, "CREATE!\n"); // Aaron edit!
+
     assert(m_pCuCompInstance == nullptr);
     m_pCuCompInstance = cudaCompress::createInstance(m_config.cudaDevice, m_config.blockCountMax,
 		m_config.elemCountPerBlockMax, m_config.codingBlockSize, m_config.log2HuffmanDistinctSymbolCountMax);
@@ -154,13 +158,14 @@ bool GPUResources::create(const Config& config)
     //TODO don't use cudaSafeCall, but manually check for out of memory?
     assert(m_dpBuffer == nullptr);
     cudaSafeCall(cudaMalloc(&m_dpBuffer, m_config.bufferSize));
-	fprintf(stderr, "CREATE!\n"); // Aaron edit!
+	
     return true;
 }
 
 void GPUResources::destroy()
 {
 	fprintf(stderr, "DESTROY\n"); // Aaron edit!
+
     cudaSafeCall(cudaFree(m_dpBuffer));
     m_dpBuffer = nullptr;
 

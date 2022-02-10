@@ -159,6 +159,8 @@ void decompressImage3D(
 	BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint)* 8));
 	cudaCompress::decodeRLHuff(pInstance, bitStream, &dpSymbols, 1, extent.width / sizeof(float)* extent.height * extent.depth);
 
+	fprintf(stdout, "called from B5D_HF5_plugin, cudaCompress::decompressImage3D\n");
+
 
 
 	if (dwtLevel < 1) {

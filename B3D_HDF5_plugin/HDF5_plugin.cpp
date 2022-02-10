@@ -32,6 +32,7 @@ extern "C" {
 
 	/* Try to register the filter, passing on the HDF5 return value */
 	int register_cudaCompress(void){
+		fprintf(stdout, "registering filter\n");
 
 		int retval;
 
@@ -50,6 +51,7 @@ extern "C" {
 	*/
 	htri_t H5Z_cudaCompress_can_apply(hid_t dcpl, hid_t type, hid_t space) {
 		/* check GPU */
+		fprintf(stdout, "filter check started\n");
 		cudaError status;
 		int deviceCount;
 		status = cudaGetDeviceCount(&deviceCount);
@@ -117,6 +119,7 @@ extern "C" {
 		   can't apply: 0
 		   error: -1
 		   */
+		fprintf(stdout, "filter check completed\n");
 		return 1;
 	}
 
@@ -282,7 +285,7 @@ extern "C" {
 		#ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stderr, "cudaCompress: Computed buffer size %d\n", bufsize);
 		#endif
-
+		fprintf(stderr, "cudaCompress: Computed buffer size %d\n", bufsize); // Aaron edit!!!
 		r = H5Pmodify_filter(dcpl, H5Z_FILTER_B5D, flags, nelements, values);
 		if (r < 0) return -1;
 
@@ -374,6 +377,7 @@ extern "C" {
 				shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			else {
+				fprintf(stderr, "Creating new GPUResource object\n\n"); // Aaron edit!!!
 				shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			sprintf(buffer, "B5D_INSTANCE=%p", shared);
@@ -439,13 +443,14 @@ extern "C" {
 			check if buffer is enough to store decompressed image
 			if necessary reallocate buffer, and copy decompressed data */
 			if (*buf_size < outDataLength) {
-//#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "buf_size < outDataLength\n");
+				//#ifdef H5Z_CUDACOMPRESS_DEBUG
 				H5free_memory(*buf);
-				*buf = H5allocate_memory(outDataLength, false);
-//#else
+				*buf = H5allocate_memory(outDataLength, false); // https://portal.hdfgroup.org/display/HDF5/H5_ALLOCATE_MEMORY
+				//#else
 //				free(*buf);
 //				*buf = malloc(outDataLength);
-//#endif
+				//#endif
 				*buf_size = outDataLength;
 			}
 			
@@ -462,7 +467,6 @@ extern "C" {
 					cudaMemcpy(*buf, dpImage, elemCount * sizeof(uint16_t), cudaMemcpyDeviceToHost);
 				}
 			}
-
 			shared->releaseBuffers(4);
 		}
 		else {
@@ -519,11 +523,11 @@ extern "C" {
 			if (*buf_size < outDataLength) {
 				//H5free_memory(*buf);
 				free(*buf);
-//#ifdef H5Z_CUDACOMPRESS_DEBUG
+			//#ifdef H5Z_CUDACOMPRESS_DEBUG
 				*buf = H5allocate_memory(outDataLength, false);
-//#else
+			//#else
 //				*buf = malloc(outDataLength);
-//#endif
+			//#endif
 				*buf_size = outDataLength;
 			}
 			memcpy(*buf, bitStream.data(), outDataLength);
@@ -536,16 +540,18 @@ extern "C" {
 		/* 	allocate GPU resources externally, pass pointer in cd_values to filter, clean them up later */
 
 
-		//cudaCompress::destroyInstance(pInstance);
+		//cudaCompress::destroyInstance(shared->m_pCuCompInstance); //(pInstance);
 		/*cudaFree(dppImage.ptr);
-		cudaFree(dppScratch.ptr);
+		//cudaFree(dppScratch.ptr);
 		cudaFree(dppScratch2.ptr);
 		cudaFree(dppBuffer.ptr);
 		cudaFree(dpImage);*/
-		/*
-		cudaFree(dpScratch);
+		
+		/*cudaFree(dpScratch);
 		cudaFree(dpBuffer);
 		cudaFree(dpSymbols);*/
+		// shared->destroy(); // putting this here calls the destroy thing, but seems to short circuit the function of the filter, and no data can be retrieved from e.g. python
+								// this is basically the same call as "cudaCompress::destroyInstance(shared->m_pCuCompInstance); //(pInstance);" from above
 		return outDataLength;
 
 	/*cleanupAndFail:
@@ -568,6 +574,8 @@ extern "C" {
 	}
 
 	int closeDirectCudaCompress(GPUResources* res) {
+		// Aaron edit!!!
+		fprintf(stderr, "Destroy called from within closeDirectCudaCompress");
 		res->destroy();
 		delete res;
 		return 0;
