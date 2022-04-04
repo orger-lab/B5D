@@ -268,7 +268,11 @@ extern "C" {
 		//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(chunkdims[2], chunkdims[1], chunkdims[0], values[1], DEVICE);
 		//pShared = new GPUResources;
 		if (useCPU) {
-			pShared = new CPUResources(chunkdims[2], chunkdims[1], chunkdims[0], DEVICE);
+			pShared = new CPUResources(newZ, // z
+				values[N_CD_VALUES + 1], // y
+				values[N_CD_VALUES + 0], // x
+				DEVICE);
+			fprintf(stdout, "Using CPU\n");
 		}
 		else {
 			pShared = new GPUResources(newZ, // z
