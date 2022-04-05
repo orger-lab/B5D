@@ -255,10 +255,13 @@ extern "C" {
 		// if set free it up
 		if (buffer2 != nullptr) {
 			sscanf(buffer2, "%p", &pShared);
+			fprintf(stderr, "B5D instance already exists, getting ready to destroy it\n");
 			pShared->destroy();
 			delete pShared;
 		}
-
+		else {
+			fprintf(stderr, "buffer2 is already null\n");
+		}
 
 		uint newZ = values[N_CD_VALUES + 2] * 
 					values[N_CD_VALUES + 3] * 
@@ -275,6 +278,7 @@ extern "C" {
 			fprintf(stdout, "Using CPU\n");
 		}
 		else {
+			fprintf(stderr, "Creating new GPUResource...\n");
 			pShared = new GPUResources(newZ, // z
 				values[N_CD_VALUES + 1], // y
 				values[N_CD_VALUES + 0], // x
