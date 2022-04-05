@@ -31,12 +31,13 @@ class FileHandler:
 		print("Closing file in python")
 		self.imageFile.close()
 
-
+inDir = pl.Path("D:/B5D_tests/chunk_read_testing")
 
 if __name__ == '__main__':
-	inputDir = pl.Path("D:/B5D_tests/chunk_tests_1.10.8_release")
+	inputDir = inDir
 	files = os.listdir(inputDir)
 	for f in files:
+		print(f)
 		my_file = FileHandler((inputDir / f))
 		my_file.load_file()
 		data = my_file.process_file()

@@ -366,7 +366,7 @@ extern "C" {
 		// Initialize cudaCompress, allocate GPU resources and upload data.
 		
 		int elemCount = sizeX * sizeY * newSizeZ; 
-		outDataLength = elemCount * sizeof(short); // Aaron edit: should this be sizeof(type) ???
+		outDataLength = elemCount * sizeof(type); //(short); // Aaron edit: should this be sizeof(type) ???
 		Resources* shared;
 		char buffer[50];
 		char* buffer2;
@@ -375,9 +375,12 @@ extern "C" {
 		// if set use it as GPUResources
 		if (buffer2 != nullptr) {
 			sscanf(buffer2, "%p", &shared);
+			shared->destroy();
+			delete shared;
+
 		}
 		// if not set, initialize GPUResources and set environment variable
-		else {
+//		else {
 			//shared = new GPUResources;
 			//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(sizeX, sizeY, newSizeZ, dwtLevels, DEVICE);
 			//shared->create(config);
@@ -390,7 +393,7 @@ extern "C" {
 			}
 			sprintf(buffer, "B5D_INSTANCE=%p", shared);
 			putenv(buffer);
-		}
+//		}
 		 
 
 		short* dpImage = shared->getBuffer<short>(elemCount * 2);
@@ -451,7 +454,7 @@ extern "C" {
 			check if buffer is enough to store decompressed image
 			if necessary reallocate buffer, and copy decompressed data */
 			if (*buf_size < outDataLength) {
-				fprintf(stdout, "buf_size < outDataLength\n");
+				// fprintf(stdout, "buf_size < outDataLength\n");
 				//#ifdef H5Z_CUDACOMPRESS_DEBUG
 				H5free_memory(*buf);
 				*buf = H5allocate_memory(outDataLength, false); // https://portal.hdfgroup.org/display/HDF5/H5_ALLOCATE_MEMORY
