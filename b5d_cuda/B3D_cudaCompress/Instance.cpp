@@ -18,7 +18,7 @@ Instance* createInstance(int cudaDevice, uint streamCountMax, uint elemCountPerS
 
 void destroyInstance(Instance* pInstance)
 {
-    fprintf(stderr, "destroyInstance() called from Instance.cpp\n");
+    //fprintf(stderr, "destroyInstance() called from Instance.cpp\n");
     if(pInstance == nullptr) return;
 
     pInstance->destroy();

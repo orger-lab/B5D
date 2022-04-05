@@ -255,7 +255,7 @@ extern "C" {
 		// if set free it up
 		if (buffer2 != nullptr) {
 			sscanf(buffer2, "%p", &pShared);
-			fprintf(stderr, "B5D instance already exists, getting ready to destroy it\n");
+			//fprintf(stderr, "B5D instance already exists, getting ready to destroy it\n");
 			pShared->destroy();
 			delete pShared;
 		}
@@ -388,7 +388,7 @@ extern "C" {
 				shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			else {
-				fprintf(stderr, "Creating new GPUResource object\n\n"); // Aaron edit!!!
+				//fprintf(stderr, "Creating new GPUResource object\n\n"); // Aaron edit!!!
 				shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
 			}
 			sprintf(buffer, "B5D_INSTANCE=%p", shared);

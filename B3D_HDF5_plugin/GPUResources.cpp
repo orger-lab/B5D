@@ -64,7 +64,7 @@ Resources::~Resources()
 {
     assert(m_pCuCompInstance == nullptr);
     assert(m_dpBuffer == nullptr);
-	fprintf(stderr, "deconstructor of GPUResources\n"); // Aaron edit!!!
+	//fprintf(stderr, "deconstructor of GPUResources\n"); // Aaron edit!!!
 }
 
 byte* Resources::getByteBuffer(size_t bytes)
@@ -146,7 +146,7 @@ bool GPUResources::create(const Config& config)
 {
     m_config = config;
 
-	fprintf(stderr, "CREATE!\n"); // Aaron edit!
+	//fprintf(stderr, "CREATE!\n"); // Aaron edit!
 
     assert(m_pCuCompInstance == nullptr);
     m_pCuCompInstance = cudaCompress::createInstance(m_config.cudaDevice, m_config.blockCountMax,
@@ -164,7 +164,7 @@ bool GPUResources::create(const Config& config)
 
 void GPUResources::destroy()
 {
-	fprintf(stderr, "DESTROY\n"); // Aaron edit!
+	//fprintf(stderr, "DESTROY\n"); // Aaron edit!
 
     cudaSafeCall(cudaFree(m_dpBuffer));
     m_dpBuffer = nullptr;
