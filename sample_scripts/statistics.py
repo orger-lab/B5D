@@ -23,6 +23,7 @@ class FileHandler:
 		print("loading file")
 		self.imageFile = h5.File(self.inputFile, 'r')
 		self.dset = self.imageFile['imagedata']
+		print(self.dset.chunks)
 
 	def process_file(self, z_range=slice(0,10)):
 		return np.mean(self.dset[:,:,0,0,z_range])
