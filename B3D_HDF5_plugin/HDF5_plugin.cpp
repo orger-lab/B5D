@@ -106,7 +106,7 @@ extern "C" {
 		//int r = H5Sget_simple_extent_dims(space, chunkdims, nullptr);
 
 
-		// Aaron Edit: Might need to change this if we want more than three dims
+		// Aaron Edit: Check that we have between 2 and 5 dimensions
 		if (ndims < 2 || ndims > 5)
 			return 0;
 
@@ -162,7 +162,7 @@ extern "C" {
 		/* It seems the H5Z_FLAG_REVERSE flag doesn't work here, so we have to be
 		careful not to clobber any existing version info */
 		if (values[0] == 0) values[0] = 0;		// quantStep
-		if (values[1] == 0) values[1] = 1;		// mode
+		if (values[1] != 2) values[1] = 1;		// mode // Aaron edit: set default to mode 1
 		if (values[2] == 0) values[2] = 1000;	// conversion (num/photoelectrons)*1000
 		if (values[3] == 0) values[3] = 0;		// background level
 		if (values[4] == 0) values[4] = 0;		// read noise (electrons)*1000
@@ -299,7 +299,7 @@ extern "C" {
 
 		// Aaron caveman debugging:
 		// fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", (values[5]));
-		fprintf(stderr, "Compression mode: %d\n", (values[1]));
+		//fprintf(stderr, "Compression mode: %d\n", (values[1]));
 
 		return 1;
 	}
@@ -313,20 +313,6 @@ extern "C" {
 		cudaSetDevice(DEVICE);
 		int outDataLength;
 
-		/*
-		cdValues:
-		0 filter version
-		1 dwtLevels > 0
-		2 quantStep*1000; 0: lossless; >0 lossy
-		3 conversion*1000
-		4 background level
-		5 read noise*1000
-		6 tile size
-		7 width
-		8 height
-		9 depth
-		10 data type
-		*/
 
 		/* Aaron edit: From the H5Z_cudaCompress_set_local function
 		if (values[0] == 0) values[0] = 0;		// quantStep
@@ -340,7 +326,9 @@ extern "C" {
 		N_CD_VALUES + 0 // x
 		N_CD_VALUES + 1 // y 
 		N_CD_VALUES + 2 // z
-		N_CD_VALUES + 3 // type: int/uint/float/...
+		N_CD_VALUES + 3 // c
+		N_CD_VALUES + 4 // t
+		N_CD_VALUES + 5 // type: int/uint/float/...
 		*/
 
 		cudaError status;

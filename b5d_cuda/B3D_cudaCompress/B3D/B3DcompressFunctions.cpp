@@ -16,25 +16,13 @@ namespace cudaCompress {
 		{
 			sizeY = sizeY * sizeZ;
 			// Do multi-level DWT in the same buffers. Need to specify pitch now!
+			// This entire if/else statement is probably not necessary if we always limit dwtLevel to 1 or 2. Aaron edit!
 			if (dwtLevel > 0 && dwtLevel < 100) {
 				cudaMemcpy(dpBuffer, dpImage, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 				switch (dwtLevel) {
-					/*case 1:
-					cudaCompress::util::predictor1(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;
-					case 2:
-					cudaCompress::util::predictor2(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;
-					case 4:
-					cudaCompress::util::predictor4(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;*/
 				case 1:
 				case 2:
-				case 7:
 					cudaCompress::util::predictor7_tiles(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					break;
-				case 9:
-					cudaCompress::util::predictorMed_tiles(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY);
 					break;
 				default:
 					break;
@@ -86,22 +74,9 @@ namespace cudaCompress {
 			if (dwtLevel > 0 && dwtLevel < 100) {
 				cudaMemcpy(dpImage, dpBuffer, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 				switch (dwtLevel) {
-					/*case 1:
-					cudaCompress::util::unPredictor1(dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;
-					case 2:
-					cudaCompress::util::unPredictor2(dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;
-					case 4:
-					cudaCompress::util::unPredictor4(dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY);
-					break;*/
 				case 1:
 				case 2:
-				case 7:
 					cudaCompress::util::unPredictor7_tiles(dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					break;
-				case 9:
-					cudaCompress::util::unPredictorMed_tiles(dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY);
 					break;
 				default:
 					break;
@@ -143,8 +118,8 @@ namespace cudaCompress {
 					cudaCompress::util::symbolize(dpSymbols, (int16_t*)dpBuffer, sizeX, sizeY, sizeZ);
 					break;*/
 				case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
-				case 3: // different offset in decompression to test bias
-				case 11: // cpu decompression
+				//case 3: // different offset in decompression to test bias
+				//case 11: // cpu decompression
 					cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
 					// variance stabilization
 					cudaCompress::util::vst(dpBuffer, dpBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
@@ -166,52 +141,52 @@ namespace cudaCompress {
 					cudaCompress::util::predictor7_tiles((int16_t*)dpScratch, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
 					cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
 					break;
-				case 7: // first version, square root + prediction7 + quantization within noise level
-					cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / conversion, sizeX * sizeY);
-					cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
-					//upscale for more precision
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
-					// run prediction + quantization
-					cudaCompress::util::predictor7_tiles_wnll(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
-					cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
-					break;
-				case 17: // swapped: square root + quantization + prediction7
-					cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
-					cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
-					//upscale for more precision
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
-					// run  quantization first then prediction
-					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpScratch, sizeX * sizeY);
-					//cudaMemcpy(dpImage, dpScratch, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
-					cudaCompress::util::predictor7_tiles((int16_t*)dpScratch, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
-					break;
-				case 27: // prediction7 + quantization + dithering
-					cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
-					cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
-					//upscale for more precision
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
-					// run prediction + quantization
-					cudaCompress::util::predictor7_tiles_wnll2(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
-					cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
-					break;
-				case 37: // proper Anscombe + prediction + quantization
-					cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
-					// scale back to photons
-					cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / conversion, sizeX * sizeY);
-					// Anscombe transform
-					cudaCompress::util::Anscombe(dpBuffer, dpBuffer, sizeX * sizeY);
-					//scale by quant step
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / (2 * quantStep), sizeX * sizeY);
-					// run prediction + quantization
-					cudaCompress::util::predictor7_tiles_wnll(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
-					cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
-					break;
+				//case 7: // first version, square root + prediction7 + quantization within noise level
+				//	cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / conversion, sizeX * sizeY);
+				//	cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	//upscale for more precision
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
+				//	// run prediction + quantization
+				//	cudaCompress::util::predictor7_tiles_wnll(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
+				//	cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
+				//	break;
+				//case 17: // swapped: square root + quantization + prediction7
+				//	cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
+				//	cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	//upscale for more precision
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
+				//	// run  quantization first then prediction
+				//	cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpScratch, sizeX * sizeY);
+				//	//cudaMemcpy(dpImage, dpScratch, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
+				//	cudaCompress::util::predictor7_tiles((int16_t*)dpScratch, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+				//	cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
+				//	break;
+				//case 27: // prediction7 + quantization + dithering
+				//	cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
+				//	cudaCompress::util::sqrtArray(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	//upscale for more precision
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / quantStep, sizeX * sizeY);
+				//	// run prediction + quantization
+				//	cudaCompress::util::predictor7_tiles_wnll2(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
+				//	cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
+				//	break;
+				//case 37: // proper Anscombe + prediction + quantization
+				//	cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
+				//	// scale back to photons
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, -bgLevel, sizeX * sizeY);
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / conversion, sizeX * sizeY);
+				//	// Anscombe transform
+				//	cudaCompress::util::Anscombe(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	//scale by quant step
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 1 / (2 * quantStep), sizeX * sizeY);
+				//	// run prediction + quantization
+				//	cudaCompress::util::predictor7_tiles_wnll(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
+				//	cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
+				//	break;
 				default:
 					break;
 				}
@@ -258,7 +233,7 @@ namespace cudaCompress {
 					cudaCompress::util::unPredictor7_tiles_nll((int16_t*)dpBuffer, dpImage, sizeX * sizeof(int16_t), sizeX, sizeY, num_tiles, quantStep);
 					break;*/
 				case 1:
-				case 11:
+				//case 11:
 					cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
 					cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
 					//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
@@ -295,65 +270,65 @@ namespace cudaCompress {
 					//back to int16_t from float
 					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
 					break;
-				case 3:
-					cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
-					cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
-					//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
-					cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					// undo scaling from quantization
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
-					// inverse variance stabilization
-					cudaCompress::util::invVst(dpBuffer, dpBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, -quantStep*quantStep / (12.0*conversion), sizeX * sizeY);
-					//back to int16_t from float
-					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
-					break;
-				case 27:
-				case 7:
-					cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
+				//case 3:
+				//	cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
+				//	cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
+				//	//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
+				//	cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+				//	// undo scaling from quantization
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
+				//	// inverse variance stabilization
+				//	cudaCompress::util::invVst(dpBuffer, dpBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, -quantStep*quantStep / (12.0*conversion), sizeX * sizeY);
+				//	//back to int16_t from float
+				//	cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
+				//	break;
+				//case 27:
+				//case 7:
+				//	cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
 
-					cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
-					//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
-					cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+				//	cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
+				//	//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
+				//	cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
 
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
-					cudaCompress::util::sqrArray(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
+				//	cudaCompress::util::sqrArray(dpBuffer, dpBuffer, sizeX * sizeY);
 
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, conversion, sizeX * sizeY);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
-					//back to int16_t from float
-					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
-					break;
-				case 17:
-					cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
-					cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, conversion, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
+				//	//back to int16_t from float
+				//	cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
+				//	break;
+				//case 17:
+				//	cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
+				//	cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
 
-					cudaCompress::util::unPredictor7_tiles(dpImage, (int16_t*)dpScratch, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					cudaCompress::util::u2f((uint16_t *)dpScratch, dpBuffer, sizeX*sizeY);
+				//	cudaCompress::util::unPredictor7_tiles(dpImage, (int16_t*)dpScratch, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+				//	cudaCompress::util::u2f((uint16_t *)dpScratch, dpBuffer, sizeX*sizeY);
 
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
-					cudaCompress::util::sqrArray(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, quantStep, sizeX * sizeY);
+				//	cudaCompress::util::sqrArray(dpBuffer, dpBuffer, sizeX * sizeY);
 
-					cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
-					//back to int16_t from float
-					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
-					break;
-				case 37:
-					cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
+				//	//back to int16_t from float
+				//	cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
+				//	break;
+				//case 37:
+				//	cudaCompress::decodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
 
-					cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
-					//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
-					cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-					// scale back by quant step
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, 2 * quantStep, sizeX * sizeY);
-					// invese Anscombe
-					cudaCompress::util::invAnscombe(dpBuffer, dpBuffer, sizeX * sizeY);
-					// convert back to numbers from photons
-					cudaCompress::util::multiply(dpBuffer, dpBuffer, conversion, sizeX * sizeY);
-					cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
-					//back to int16_t from float
-					cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
-					break;
+				//	cudaCompress::util::unsymbolize(dpImage, dpSymbols, sizeX, sizeY, sizeZ);
+				//	//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
+				//	cudaCompress::util::unPredictor7_tiles_wnll(dpImage, dpBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+				//	// scale back by quant step
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, 2 * quantStep, sizeX * sizeY);
+				//	// invese Anscombe
+				//	cudaCompress::util::invAnscombe(dpBuffer, dpBuffer, sizeX * sizeY);
+				//	// convert back to numbers from photons
+				//	cudaCompress::util::multiply(dpBuffer, dpBuffer, conversion, sizeX * sizeY);
+				//	cudaCompress::util::offset(dpBuffer, dpBuffer, bgLevel, sizeX * sizeY);
+				//	//back to int16_t from float
+				//	cudaCompress::util::f2u(dpBuffer, (uint16_t*)dpImage, sizeX*sizeY);
+				//	break;
 				default:
 					break;
 				}
@@ -401,7 +376,7 @@ namespace cudaCompress {
 			switch (dwtLevel) {
 			case 1:
 			case 2:
-			case 7:
+			//case 7:
 				cudaCompress::util::predictor7_tilesCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
 				break;
 			default:
@@ -452,7 +427,7 @@ namespace cudaCompress {
 			switch (dwtLevel) {					
 			case 1:
 			case 2:
-			case 7:
+			//case 7:
 				cudaCompress::util::unPredictor7_tilesCPU(pBuffer, pImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
 				break;
 			default:
@@ -483,8 +458,8 @@ namespace cudaCompress {
 
 			switch (dwtLevel) {					
 			case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
-			case 3: // different offset in decompression to test bias
-			case 11: // cpu decompression
+			//case 3: // different offset in decompression to test bias
+			//case 11: // cpu decompression
 				// variance stabilization
 				cudaCompress::util::vstCPU(pBuffer,pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
 				// scale with quantization step
@@ -546,7 +521,7 @@ namespace cudaCompress {
 
 			switch (dwtLevel) {
 			case 1:
-			case 11:
+			//case 11:
 				//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
 				cudaCompress::util::unPredictor7_tiles_wnllCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
 				// undo scaling from quantization
