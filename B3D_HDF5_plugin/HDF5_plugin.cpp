@@ -8,9 +8,6 @@
 
 #define DEVICE 0
 
-bool useCPU = false;
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -268,23 +265,13 @@ extern "C" {
 					values[N_CD_VALUES + 4];
 
 		// initiate GPUResources
-		//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(chunkdims[2], chunkdims[1], chunkdims[0], values[1], DEVICE);
-		//pShared = new GPUResources;
-		if (useCPU) {
-			pShared = new CPUResources(newZ, // z
-				values[N_CD_VALUES + 1], // y
-				values[N_CD_VALUES + 0], // x
-				DEVICE);
-			fprintf(stdout, "Using CPU\n");
-		}
-		else {
-			fprintf(stderr, "Creating new GPUResource...\n");
-			pShared = new GPUResources(newZ, // z
-				values[N_CD_VALUES + 1], // y
-				values[N_CD_VALUES + 0], // x
-				DEVICE);
-		}
-		//pShared->create(config);
+
+		//fprintf(stderr, "Creating new GPUResource...\n");
+		pShared = new GPUResources(newZ, // z
+			values[N_CD_VALUES + 1], // y
+			values[N_CD_VALUES + 0], // x
+			DEVICE);
+
 		// set B5D_INSTANCE environment variable to GPUResources pointer
 		sprintf(buffer, "B5D_INSTANCE=%p", pShared);
 		putenv(buffer);
@@ -368,12 +355,8 @@ extern "C" {
 
 		}
 
-		if (useCPU) {
-			shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
-		}
-		else {
-			shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
-		}
+		shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
+
 		sprintf(buffer, "B5D_INSTANCE=%p", shared);
 		putenv(buffer);
 		 
@@ -385,12 +368,7 @@ extern "C" {
 
 		
 		// initialize Symbols array to 0
-		if (useCPU) {
-			memset(dpSymbols, 0, elemCount * sizeof(cudaCompress::Symbol16));
-		}
-		else {
-			cudaMemset(dpSymbols, 0, elemCount * sizeof(cudaCompress::Symbol16));
-		}
+		cudaMemset(dpSymbols, 0, elemCount * sizeof(cudaCompress::Symbol16));
 
 		std::vector<uint> bitStream;
 
@@ -408,25 +386,13 @@ extern "C" {
 			// TODO: fix lossy CPU version
 			if (quantStep > 0) {
 				// start lossy decompression
-				if (useCPU) {
-					decompressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
-						sizeX, sizeY, newSizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
-				}
-				else {
-					decompressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
-						sizeX, sizeY, newSizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
-				}
+				decompressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, dpSymbols, 
+					sizeX, sizeY, newSizeZ, dwtLevels, quantStep, bgLevel, tileSize, conversion, readNoise);
 			}
 			else {
 				// start lossless decompression
-				if (useCPU) {
-					decompressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
-						sizeX, sizeY, newSizeZ, dwtLevels, tileSize);
-				}
-				else {
-					decompressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
-						sizeX, sizeY, newSizeZ, dwtLevels, tileSize);
-				}
+				decompressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, dpSymbols, 
+					sizeX, sizeY, newSizeZ, dwtLevels, tileSize);
 
 			}
 			/* decompressed image is now in dpImage
@@ -450,12 +416,7 @@ extern "C" {
 				cudaMemcpy(*buf, dpBuffer, elemCount * sizeof(uint8_t), cudaMemcpyDeviceToHost);
 			}
 			else {
-				if (useCPU) {
-					memcpy(*buf, dpImage, elemCount * sizeof(uint16_t));
-				}
-				else {
-					cudaMemcpy(*buf, dpImage, elemCount * sizeof(uint16_t), cudaMemcpyDeviceToHost);
-				}
+				cudaMemcpy(*buf, dpImage, elemCount * sizeof(uint16_t), cudaMemcpyDeviceToHost);
 			}
 			shared->releaseBuffers(4);
 		}
@@ -472,40 +433,21 @@ extern "C" {
 				cudaCompress::util::u8tou16((uint8_t*)dpBuffer, (uint16_t*)dpImage, elemCount);
 			}
 			else {
-				if (useCPU) {
-					memcpy(dpImage, *buf, elemCount * sizeof(uint16_t));
-				}
-				else {
-					cudaMemcpy(dpImage, *buf, elemCount * sizeof(uint16_t), cudaMemcpyHostToDevice);
-				}
+				cudaMemcpy(dpImage, *buf, elemCount * sizeof(uint16_t), cudaMemcpyHostToDevice);
 			}
 
 			// TODO: fix lossy CPU version
 			if (quantStep > 0) {
 				// start lossy compression
-				if (useCPU) {
-					compressImageCPU(bitStream, dpImage, dpBuffer, dpScratch, 
-						dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
+				compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, 
+					dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
 					quantStep, bgLevel, tileSize, conversion, readNoise);
-				}
-				else {
-					compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, 
-						dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
-					quantStep, bgLevel, tileSize, conversion, readNoise);
-				}
 			}
 			else {
 				// start lossless compression
-				if (useCPU) {
-					compressImageLLCPU(bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
-						dpSymbols, sizeX, sizeY, newSizeZ, 
+				compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
+					dpSymbols, sizeX, sizeY, newSizeZ, 
 					dwtLevels, tileSize);
-				}
-				else {
-					compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
-						dpSymbols, sizeX, sizeY, newSizeZ, 
-					dwtLevels, tileSize);
-				}
 			}
 			/* compressed data is now in bitStream - both GPU and CPU version
 			copy it to output buffer */
