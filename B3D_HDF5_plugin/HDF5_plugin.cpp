@@ -466,33 +466,8 @@ extern "C" {
 			shared->releaseBuffers(4);
 		}
 
-		// Aaron caveman debugging:
-		//fprintf(stderr, "H5Z_cudaCompress_filter tileSize: %d\n", tileSize);
-		/* clean up gpu buffers */
-		/* 	allocate GPU resources externally, pass pointer in cd_values to filter, clean them up later */
-
-
-		//cudaCompress::destroyInstance(shared->m_pCuCompInstance); //(pInstance);
-		/*cudaFree(dppImage.ptr);
-		//cudaFree(dppScratch.ptr);
-		cudaFree(dppScratch2.ptr);
-		cudaFree(dppBuffer.ptr);
-		cudaFree(dpImage);*/
-		
-		/*cudaFree(dpScratch);
-		cudaFree(dpBuffer);
-		cudaFree(dpSymbols);*/
-		// shared->destroy(); // putting this here calls the destroy thing, but seems to short circuit the function of the filter, and no data can be retrieved from e.g. python
-								// this is basically the same call as "cudaCompress::destroyInstance(shared->m_pCuCompInstance); //(pInstance);" from above
 		return outDataLength;
 
-	/*cleanupAndFail:
-		cudaFree(dppImage.ptr);
-		cudaFree(dppScratch.ptr);
-		cudaFree(dppScratch2.ptr);
-		cudaFree(dppBuffer.ptr);
-		cudaFree(dpSymbols);
-		return 0;*/
 	}
 
 
