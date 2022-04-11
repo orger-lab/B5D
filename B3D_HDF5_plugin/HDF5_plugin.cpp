@@ -367,21 +367,15 @@ extern "C" {
 			delete shared;
 
 		}
-		// if not set, initialize GPUResources and set environment variable
-//		else {
-			//shared = new GPUResources;
-			//GPUResources::Config config = CompressHeightfieldResources::getRequired3DResources(sizeX, sizeY, newSizeZ, dwtLevels, DEVICE);
-			//shared->create(config);
-			if (useCPU) {
-				shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
-			}
-			else {
-				//fprintf(stderr, "Creating new GPUResource object\n\n"); // Aaron edit!!!
-				shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
-			}
-			sprintf(buffer, "B5D_INSTANCE=%p", shared);
-			putenv(buffer);
-//		}
+
+		if (useCPU) {
+			shared = new CPUResources(sizeX, sizeY, newSizeZ, DEVICE);
+		}
+		else {
+			shared = new GPUResources(sizeX, sizeY, newSizeZ, DEVICE);
+		}
+		sprintf(buffer, "B5D_INSTANCE=%p", shared);
+		putenv(buffer);
 		 
 
 		short* dpImage = shared->getBuffer<short>(elemCount * 2);
@@ -389,9 +383,6 @@ extern "C" {
 		float* dpScratch = shared->getBuffer<float>(elemCount);
 		cudaCompress::Symbol16* dpSymbols = shared->getBuffer<Symbol16>(elemCount);
 
-		//cudaMemset(dpImage, 0, elemCount * sizeof(float));
-		//cudaMemset(dpBuffer, 0, elemCount * sizeof(float));
-		//cudaMemset(dpScratch, 0, elemCount * sizeof(float));
 		
 		// initialize Symbols array to 0
 		if (useCPU) {
