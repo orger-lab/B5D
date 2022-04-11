@@ -359,193 +359,193 @@ namespace cudaCompress {
 		// TODO: swap cases in CPU
 
 
-		void compressImageLLCPU(
-			//Instance* pInstance,
-			std::vector<uint>& i_bitStream, // bitStream for compressed data
-			int16_t* pImage,  // input image in GPU memory
-			int16_t* pBuffer,
-			int16_t* pScratch,
-			uint16_t* pSymbols,
-			int sizeX, int sizeY, int sizeZ,         // image size
-			size_t dwtLevel, int tileSize)               // quantization step
-		{
-			sizeY = sizeY * sizeZ;
-			// Do multi-level DWT in the same buffers. Need to specify pitch now!
-			
-			memcpy(pBuffer, pImage, sizeX*sizeY * sizeof(int16_t));
-			switch (dwtLevel) {
-			case 1:
-			case 2:
-			//case 7:
-				cudaCompress::util::predictor7_tilesCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-				break;
-			default:
-				break;
-			}
-			cudaCheckMsg("predictor failed");
-			
+		//void compressImageLLCPU(
+		//	//Instance* pInstance,
+		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
+		//	int16_t* pImage,  // input image in GPU memory
+		//	int16_t* pBuffer,
+		//	int16_t* pScratch,
+		//	uint16_t* pSymbols,
+		//	int sizeX, int sizeY, int sizeZ,         // image size
+		//	size_t dwtLevel, int tileSize)               // quantization step
+		//{
+		//	sizeY = sizeY * sizeZ;
+		//	// Do multi-level DWT in the same buffers. Need to specify pitch now!
+		//	
+		//	memcpy(pBuffer, pImage, sizeX*sizeY * sizeof(int16_t));
+		//	switch (dwtLevel) {
+		//	case 1:
+		//	case 2:
+		//	//case 7:
+		//		cudaCompress::util::predictor7_tilesCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+		//		break;
+		//	default:
+		//		break;
+		//	}
+		//	cudaCheckMsg("predictor failed");
+		//	
 
-			cudaCompress::util::symbolizeCPU(pSymbols, pBuffer, sizeX, sizeY, 1);
+		//	cudaCompress::util::symbolizeCPU(pSymbols, pBuffer, sizeX, sizeY, 1);
 
-			// Run-length + Huffman encode the quantized coefficients.
-			cudaCompress::BitStream bitStream(&i_bitStream);
-			cudaCompress::BitStream* pbitStream = &bitStream;
-			
-			std::vector<Symbol16> symbolsVec(pSymbols, pSymbols + sizeX*sizeY);
-			std::vector<Symbol16>* pSymbolsVec = &symbolsVec;
-			//cudaCompress::encodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
-			cudaCompress::encodeRLHuffCPU(&pbitStream, &pSymbolsVec, 1, 128);
-			//return bitStream;
-		}
+		//	// Run-length + Huffman encode the quantized coefficients.
+		//	cudaCompress::BitStream bitStream(&i_bitStream);
+		//	cudaCompress::BitStream* pbitStream = &bitStream;
+		//	
+		//	std::vector<Symbol16> symbolsVec(pSymbols, pSymbols + sizeX*sizeY);
+		//	std::vector<Symbol16>* pSymbolsVec = &symbolsVec;
+		//	//cudaCompress::encodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
+		//	cudaCompress::encodeRLHuffCPU(&pbitStream, &pSymbolsVec, 1, 128);
+		//	//return bitStream;
+		//}
 
-		// pSymbols has to be initialized to 0
-		void decompressImageLLCPU(
-			//Instance* pInstance,
-			std::vector<uint>& i_bitStream, // bitStream for compressed data
-			int16_t* pImage,  // input image in GPU memory
-			int16_t* pBuffer,
-			int16_t* pScratch,
-			uint16_t* pSymbols,
-			int sizeX, int sizeY, int sizeZ,         // image size
-			size_t dwtLevel, int tileSize)
-		{
-			sizeY = sizeY * sizeZ;
-			BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
-			//cudaCompress::decodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
-			BitStreamReadOnly* pBitStream = &bitStream;
-			std::vector<Symbol16> symbolsReconst;
-			std::vector<Symbol16>* psymbolsReconst = &symbolsReconst;
-			cudaCompress::decodeRLHuffCPU(&pBitStream, &psymbolsReconst, sizeX * sizeY, 1, 128, true);
-			assert(symbolsReconst.size() == sizeX * sizeY);
-			memcpy(pSymbols, symbolsReconst.data(), sizeX * sizeY * sizeof(Symbol16));
+		//// pSymbols has to be initialized to 0
+		//void decompressImageLLCPU(
+		//	//Instance* pInstance,
+		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
+		//	int16_t* pImage,  // input image in GPU memory
+		//	int16_t* pBuffer,
+		//	int16_t* pScratch,
+		//	uint16_t* pSymbols,
+		//	int sizeX, int sizeY, int sizeZ,         // image size
+		//	size_t dwtLevel, int tileSize)
+		//{
+		//	sizeY = sizeY * sizeZ;
+		//	BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
+		//	//cudaCompress::decodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
+		//	BitStreamReadOnly* pBitStream = &bitStream;
+		//	std::vector<Symbol16> symbolsReconst;
+		//	std::vector<Symbol16>* psymbolsReconst = &symbolsReconst;
+		//	cudaCompress::decodeRLHuffCPU(&pBitStream, &psymbolsReconst, sizeX * sizeY, 1, 128, true);
+		//	assert(symbolsReconst.size() == sizeX * sizeY);
+		//	memcpy(pSymbols, symbolsReconst.data(), sizeX * sizeY * sizeof(Symbol16));
 
-			cudaCompress::util::unsymbolizeCPU(pBuffer, pSymbols, sizeX, sizeY, 1);
-			//cudaMemcpy(dpBuffer, dpSymbols, sizeX * sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
+		//	cudaCompress::util::unsymbolizeCPU(pBuffer, pSymbols, sizeX, sizeY, 1);
+		//	//cudaMemcpy(dpBuffer, dpSymbols, sizeX * sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 
-			
-			memcpy(pImage, pBuffer, sizeX*sizeY * sizeof(int16_t));
-			switch (dwtLevel) {					
-			case 1:
-			case 2:
-			//case 7:
-				cudaCompress::util::unPredictor7_tilesCPU(pBuffer, pImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-				break;
-			default:
-				break;
-			}
-			cudaCheckMsg("unpredictor failed");
-			
-		}
+		//	
+		//	memcpy(pImage, pBuffer, sizeX*sizeY * sizeof(int16_t));
+		//	switch (dwtLevel) {					
+		//	case 1:
+		//	case 2:
+		//	//case 7:
+		//		cudaCompress::util::unPredictor7_tilesCPU(pBuffer, pImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+		//		break;
+		//	default:
+		//		break;
+		//	}
+		//	cudaCheckMsg("unpredictor failed");
+		//	
+		//}
 
-		void compressImageCPU(
-			//Instance* pInstance,
-			std::vector<uint>& i_bitStream, // bitStream for compressed data
-			int16_t* pImage,  // input image in GPU memory
-			float* pBuffer,
-			float* pScratch,
-			uint16_t* pSymbols,
-			int sizeX, int sizeY, int sizeZ,         // image size
-			size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion, float readNoise)               // quantization step
-		{
-			sizeY = sizeY * sizeZ;
-			sizeZ = 1;
-			
-			//uint16_t* dpSymbolsN = dpSymbols + sizeX * sizeY;
-			uint16_t* ppSymbols[1] = { pSymbols };
+		//void compressImageCPU(
+		//	//Instance* pInstance,
+		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
+		//	int16_t* pImage,  // input image in GPU memory
+		//	float* pBuffer,
+		//	float* pScratch,
+		//	uint16_t* pSymbols,
+		//	int sizeX, int sizeY, int sizeZ,         // image size
+		//	size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion, float readNoise)               // quantization step
+		//{
+		//	sizeY = sizeY * sizeZ;
+		//	sizeZ = 1;
+		//	
+		//	//uint16_t* dpSymbolsN = dpSymbols + sizeX * sizeY;
+		//	uint16_t* ppSymbols[1] = { pSymbols };
 
-			cudaCompress::util::u2fCPU((uint16_t*)pImage, pBuffer, sizeX * sizeY);
-			memset(pScratch, 0, sizeX *  sizeY * sizeof(int16_t));
+		//	cudaCompress::util::u2fCPU((uint16_t*)pImage, pBuffer, sizeX * sizeY);
+		//	memset(pScratch, 0, sizeX *  sizeY * sizeof(int16_t));
 
-			switch (dwtLevel) {					
-			case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
-			//case 3: // different offset in decompression to test bias
-			//case 11: // cpu decompression
-				// variance stabilization
-				cudaCompress::util::vstCPU(pBuffer,pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
-				// scale with quantization step
-				cudaCompress::util::multiplyCPU(pBuffer, pBuffer, 1 / quantStep, sizeX * sizeY);
-				// run prediction + quantization
-				cudaCompress::util::predictor7_tiles_wnllCPU(pBuffer, pScratch, pImage, sizeX, sizeX, sizeY, tileSize);
-				break;
-			case 2: // swapped: square root /w readnoise + quantization + prediction7
-				// variance stabilization
-				cudaCompress::util::vstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
-				// scale with quantization step
-				cudaCompress::util::multiplyCPU(pBuffer, pBuffer, 1 / quantStep, sizeX * sizeY);
-				// run  quantization first then prediction
-				cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pScratch, sizeX * sizeY);
-				//cudaMemcpy(dpImage, dpScratch, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
-				cudaCompress::util::predictor7_tilesCPU((int16_t*)pScratch, pImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-				break;
-			default:
-				break;
-			}
-			cudaCheckMsg("predictor failed");
+		//	switch (dwtLevel) {					
+		//	case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
+		//	//case 3: // different offset in decompression to test bias
+		//	//case 11: // cpu decompression
+		//		// variance stabilization
+		//		cudaCompress::util::vstCPU(pBuffer,pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
+		//		// scale with quantization step
+		//		cudaCompress::util::multiplyCPU(pBuffer, pBuffer, 1 / quantStep, sizeX * sizeY);
+		//		// run prediction + quantization
+		//		cudaCompress::util::predictor7_tiles_wnllCPU(pBuffer, pScratch, pImage, sizeX, sizeX, sizeY, tileSize);
+		//		break;
+		//	case 2: // swapped: square root /w readnoise + quantization + prediction7
+		//		// variance stabilization
+		//		cudaCompress::util::vstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
+		//		// scale with quantization step
+		//		cudaCompress::util::multiplyCPU(pBuffer, pBuffer, 1 / quantStep, sizeX * sizeY);
+		//		// run  quantization first then prediction
+		//		cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pScratch, sizeX * sizeY);
+		//		//cudaMemcpy(dpImage, dpScratch, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
+		//		cudaCompress::util::predictor7_tilesCPU((int16_t*)pScratch, pImage, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+		//		break;
+		//	default:
+		//		break;
+		//	}
+		//	cudaCheckMsg("predictor failed");
 
-			cudaCompress::util::symbolizeCPU(pSymbols, pImage, sizeX, sizeY, sizeZ);				
-			// Run-length + Huffman encode the quantized coefficients.
-			cudaCompress::BitStream bitStream(&i_bitStream);
-			cudaCompress::BitStream* pbitStream = &bitStream;
+		//	cudaCompress::util::symbolizeCPU(pSymbols, pImage, sizeX, sizeY, sizeZ);				
+		//	// Run-length + Huffman encode the quantized coefficients.
+		//	cudaCompress::BitStream bitStream(&i_bitStream);
+		//	cudaCompress::BitStream* pbitStream = &bitStream;
 
-			std::vector<Symbol16> symbolsVec(pSymbols, pSymbols + sizeX*sizeY);
-			std::vector<Symbol16>* pSymbolsVec = &symbolsVec;
-			//cudaCompress::encodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
-			cudaCompress::encodeRLHuffCPU(&pbitStream, &pSymbolsVec, 1, 128);
-			
-		}
+		//	std::vector<Symbol16> symbolsVec(pSymbols, pSymbols + sizeX*sizeY);
+		//	std::vector<Symbol16>* pSymbolsVec = &symbolsVec;
+		//	//cudaCompress::encodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
+		//	cudaCompress::encodeRLHuffCPU(&pbitStream, &pSymbolsVec, 1, 128);
+		//	
+		//}
 
-		void decompressImageCPU(
-			//Instance* pInstance,
-			std::vector<uint>& i_bitStream, // bitStream for compressed data
-			int16_t* pImage,  // input image in GPU memory
-			float* pBuffer,
-			float* pScratch,
-			uint16_t* pSymbols,
-			int sizeX, int sizeY, int sizeZ,         // image size
-			size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion, float readNoise)
-		{
-			sizeY = sizeY * sizeZ;
-			sizeZ = 1;
-			
-			dwtLevel = dwtLevel - 100;
-			BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
-			//cudaCompress::decodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
-			BitStreamReadOnly* pBitStream = &bitStream;
-			std::vector<Symbol16> symbolsReconst;
-			std::vector<Symbol16>* psymbolsReconst = &symbolsReconst;
-			cudaCompress::decodeRLHuffCPU(&pBitStream, &psymbolsReconst, sizeX * sizeY, 1, 128, true);
-			assert(symbolsReconst.size() == sizeX * sizeY);
-			memcpy(pSymbols, symbolsReconst.data(), sizeX * sizeY * sizeof(Symbol16));
+		//void decompressImageCPU(
+		//	//Instance* pInstance,
+		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
+		//	int16_t* pImage,  // input image in GPU memory
+		//	float* pBuffer,
+		//	float* pScratch,
+		//	uint16_t* pSymbols,
+		//	int sizeX, int sizeY, int sizeZ,         // image size
+		//	size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion, float readNoise)
+		//{
+		//	sizeY = sizeY * sizeZ;
+		//	sizeZ = 1;
+		//	
+		//	dwtLevel = dwtLevel - 100;
+		//	BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
+		//	//cudaCompress::decodeRLHuff(pInstance, bitStream, &pSymbols, 1, sizeX * sizeY);
+		//	BitStreamReadOnly* pBitStream = &bitStream;
+		//	std::vector<Symbol16> symbolsReconst;
+		//	std::vector<Symbol16>* psymbolsReconst = &symbolsReconst;
+		//	cudaCompress::decodeRLHuffCPU(&pBitStream, &psymbolsReconst, sizeX * sizeY, 1, 128, true);
+		//	assert(symbolsReconst.size() == sizeX * sizeY);
+		//	memcpy(pSymbols, symbolsReconst.data(), sizeX * sizeY * sizeof(Symbol16));
 
-			cudaCompress::util::unsymbolizeCPU(pImage, pSymbols, sizeX, sizeY, sizeZ);
+		//	cudaCompress::util::unsymbolizeCPU(pImage, pSymbols, sizeX, sizeY, sizeZ);
 
-			switch (dwtLevel) {
-			case 1:
-			//case 11:
-				//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
-				cudaCompress::util::unPredictor7_tiles_wnllCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-				// undo scaling from quantization
-				cudaCompress::util::multiplyCPU(pBuffer, pBuffer, quantStep, sizeX * sizeY);
-				// inverse variance stabilization
-				cudaCompress::util::invVstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
-				//back to int16_t from float
-				cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pImage, sizeX*sizeY);
-				break;
-			case 2:
-				cudaCompress::util::unPredictor7_tilesCPU(pImage, (int16_t*)pScratch, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
-				cudaCompress::util::u2fCPU((uint16_t *)pScratch, pBuffer, sizeX*sizeY);
+		//	switch (dwtLevel) {
+		//	case 1:
+		//	//case 11:
+		//		//cudaCompress::util::unQuantize(dpImage, dpBuffer, sizeX, sizeX, sizeY);
+		//		cudaCompress::util::unPredictor7_tiles_wnllCPU(pImage, pBuffer, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+		//		// undo scaling from quantization
+		//		cudaCompress::util::multiplyCPU(pBuffer, pBuffer, quantStep, sizeX * sizeY);
+		//		// inverse variance stabilization
+		//		cudaCompress::util::invVstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
+		//		//back to int16_t from float
+		//		cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pImage, sizeX*sizeY);
+		//		break;
+		//	case 2:
+		//		cudaCompress::util::unPredictor7_tilesCPU(pImage, (int16_t*)pScratch, sizeX * sizeof(int16_t), sizeX, sizeY, tileSize);
+		//		cudaCompress::util::u2fCPU((uint16_t *)pScratch, pBuffer, sizeX*sizeY);
 
-				cudaCompress::util::multiplyCPU(pBuffer, pBuffer, quantStep, sizeX * sizeY);
-				// inverse variance stabilization
-				cudaCompress::util::invVstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
-				//back to int16_t from float
-				cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pImage, sizeX*sizeY);
-				break;
-			default:
-				break;
-			}
-			cudaCheckMsg("unpredictor failed");
-		}
+		//		cudaCompress::util::multiplyCPU(pBuffer, pBuffer, quantStep, sizeX * sizeY);
+		//		// inverse variance stabilization
+		//		cudaCompress::util::invVstCPU(pBuffer, pBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
+		//		//back to int16_t from float
+		//		cudaCompress::util::f2uCPU(pBuffer, (uint16_t*)pImage, sizeX*sizeY);
+		//		break;
+		//	default:
+		//		break;
+		//	}
+		//	cudaCheckMsg("unpredictor failed");
+		//}
 
 
 	//}
