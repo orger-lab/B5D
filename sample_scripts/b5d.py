@@ -182,3 +182,25 @@ class B5D_Compression_Test:
 
 	def tearDownInputFile(self):
 		self.original_file.close()
+
+class B5D_Read_Test:
+	"""Defines file handling operations"""
+
+	def __init__(self, inFile):
+		self.inputFile = pl.Path(inFile)
+
+		self.imageFile = None
+		self.dset = None
+
+	def load_file(self):
+		print("loading file")
+		self.imageFile = h5.File(self.inputFile, 'r')
+		self.dset = self.imageFile['imagedata']
+		print(self.dset.chunks)
+
+	def process_file(self, z_range=slice(0,10)):
+		return np.mean(self.dset[:,:,0,0,z_range])
+
+	def unload_file(self):
+		print("Closing file in python")
+		self.imageFile.close()
