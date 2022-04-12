@@ -17,7 +17,7 @@ namespace cudaCompress {
 			sizeY = sizeY * sizeZ;
 			// Do multi-level DWT in the same buffers. Need to specify pitch now!
 			// This entire if/else statement is probably not necessary if we always limit dwtLevel to 1 or 2. Aaron edit!
-			if (dwtLevel > 0 && dwtLevel < 100) {
+			// if (dwtLevel > 0 && dwtLevel < 100) {
 				cudaMemcpy(dpBuffer, dpImage, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 				switch (dwtLevel) {
 				case 1:
@@ -28,8 +28,8 @@ namespace cudaCompress {
 					break;
 				}
 				cudaCheckMsg("predictor failed");
-			}
-			else {
+			//}
+			/*else {
 				dwtLevel = dwtLevel - 100;
 				cudaCompress::util::dwtIntForward(
 					dpBuffer, dpScratch, dpImage, sizeX, sizeY, 1, sizeX, 0, sizeX, 0);
@@ -38,7 +38,7 @@ namespace cudaCompress {
 					cudaCompress::util::dwtIntForward(
 						dpBuffer, dpScratch, dpBuffer, sizeX / pow(2.0, i), sizeY / pow(2.0, i), 1, sizeX, 0, sizeX, 0);
 				}				
-			}
+			}*/
 
 			// dpBuffer now contains the multi-level DWT decomposition.
 
@@ -71,7 +71,7 @@ namespace cudaCompress {
 			cudaCompress::util::unsymbolize(dpBuffer, dpSymbols, sizeX, sizeY, 1);
 			//cudaMemcpy(dpBuffer, dpSymbols, sizeX * sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 
-			if (dwtLevel > 0 && dwtLevel < 100) {
+			//if (dwtLevel > 0 && dwtLevel < 100) {
 				cudaMemcpy(dpImage, dpBuffer, sizeX*sizeY * sizeof(int16_t), cudaMemcpyDeviceToDevice);
 				switch (dwtLevel) {
 				case 1:
@@ -82,7 +82,7 @@ namespace cudaCompress {
 					break;
 				}
 				cudaCheckMsg("unpredictor failed");
-			}
+			/* }
 			else {
 				dwtLevel = dwtLevel - 100;
 				for (int i = dwtLevel - 1; i > 0; i--)
@@ -93,7 +93,7 @@ namespace cudaCompress {
 				cudaCompress::util::dwtIntInverse(
 					dpImage, dpScratch, dpBuffer, sizeX, sizeY, 1, sizeX, 0, sizeX, 0); 
 				
-			}
+			}*/
 		}
 
 		void compressImage(
@@ -108,7 +108,7 @@ namespace cudaCompress {
 		{
 			sizeY = sizeY * sizeZ;
 			sizeZ = 1;
-			if (dwtLevel > 0 && dwtLevel < 100) {
+			//if (dwtLevel > 0 && dwtLevel < 100) {
 				uint16_t* pdpSymbols[1] = { dpSymbols };
 				switch (dwtLevel) {
 					/*case 7:
@@ -193,7 +193,7 @@ namespace cudaCompress {
 				cudaCheckMsg("predictor failed");
 				cudaCompress::BitStream bitStream(&i_bitStream);
 				cudaCompress::encodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
-			}
+			/* }
 			else {
 				dwtLevel = dwtLevel - 100;
 				cudaCompress::util::dwtFloat2DForwardFromUshort(
@@ -207,7 +207,7 @@ namespace cudaCompress {
 				cudaCompress::BitStream bitStream(&i_bitStream);
 				cudaCompress::encodeRLHuff(pInstance, bitStream, &dpSymbols, 1, sizeX * sizeY);
 				//uint16_t* dpSymbolsN = dpSymbols + sizeX * sizeY;				
-			}
+			}*/
 		}
 
 		void decompressImage(
