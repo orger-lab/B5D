@@ -4,12 +4,6 @@
     <Filter Include="B3D">
       <UniqueIdentifier>{8ac2c53b-d61a-4b3c-abea-c2d71d1a6641}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CPU">
-      <UniqueIdentifier>{678c0a01-8613-41bc-ad4b-fa23d357732d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CPU\tools">
-      <UniqueIdentifier>{c353dd8e-a284-4e10-944d-92a9143ecba4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="profiler">
       <UniqueIdentifier>{25f47007-8f00-4e9f-867c-acf9ef1d84f3}</UniqueIdentifier>
     </Filter>
@@ -25,11 +19,37 @@
     <Filter Include="util">
       <UniqueIdentifier>{89fc5cb2-b4c8-443c-a19f-dc6ac7228c9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CPU">
+      <UniqueIdentifier>{380b8cde-e1e8-40e3-9eff-0e2291157985}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="B3D_cudaCompress\B3D\B3DcompressFunctions.cpp">
       <Filter>B3D</Filter>
     </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\profiler\profiler.cpp">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\profiler\profilerlogwriter.cpp">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\profiler\profilerstreamwriter.cpp">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\reduce\reduce_plan.cpp">
+      <Filter>reduce</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\scan\scan_plan.cpp">
+      <Filter>scan</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\util\CudaTimer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="B3D_cudaCompress\Encode.cpp" />
+    <ClCompile Include="B3D_cudaCompress\Instance.cpp" />
+    <ClCompile Include="B3D_cudaCompress\InstanceImpl.cpp" />
+    <ClCompile Include="B3D_cudaCompress\Timing.cpp" />
+    <ClCompile Include="B3D_cudaCompress\CPU\tools\stb_image.c" />
     <ClCompile Include="B3D_cudaCompress\CPU\ArithmeticCPU.cpp">
       <Filter>CPU</Filter>
     </ClCompile>
@@ -66,66 +86,8 @@
     <ClCompile Include="B3D_cudaCompress\CPU\YCoCgCPU.cpp">
       <Filter>CPU</Filter>
     </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\tools\stb_image.c">
-      <Filter>CPU\tools</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\profiler\profiler.cpp">
-      <Filter>profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\profiler\profilerlogwriter.cpp">
-      <Filter>profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\profiler\profilerstreamwriter.cpp">
-      <Filter>profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\reduce\reduce_plan.cpp">
-      <Filter>reduce</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\scan\scan_plan.cpp">
-      <Filter>scan</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\util\CudaTimer.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\Encode.cpp" />
-    <ClCompile Include="B3D_cudaCompress\Instance.cpp" />
-    <ClCompile Include="B3D_cudaCompress\InstanceImpl.cpp" />
-    <ClCompile Include="B3D_cudaCompress\Timing.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="B3D_cudaCompress\CPU\ArithmeticCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\EncoderTestSuite.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\GolombRiceCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HistogramCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanTableCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\RBUCCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\RunLengthCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\YCoCgCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\tools\Entropy.h">
-      <Filter>CPU\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\tools\stb_image.h">
-      <Filter>CPU\tools</Filter>
-    </ClInclude>
     <ClInclude Include="B3D_cudaCompress\profiler\profiler.hpp">
       <Filter>profiler</Filter>
     </ClInclude>
@@ -175,6 +137,35 @@
     <ClInclude Include="B3D_cudaCompress\PackInc.h" />
     <ClInclude Include="B3D_cudaCompress\RunLength.h" />
     <ClInclude Include="B3D_cudaCompress\util.h" />
+    <ClInclude Include="B3D_cudaCompress\CPU\tools\Entropy.h" />
+    <ClInclude Include="B3D_cudaCompress\CPU\tools\stb_image.h" />
+    <ClInclude Include="B3D_cudaCompress\CPU\ArithmeticCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\EncoderTestSuite.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\GolombRiceCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\HistogramCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanTableCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\RBUCCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\RunLengthCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\YCoCgCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="B3D_cudaCompress\reduce\reduce_app.cui">

@@ -69,7 +69,7 @@ for quant in quants:
 		data = file_to_read.process_file()
 		print(data)
 		file_to_read.unload_file()
-		sys.exit("Exiting")
+		# sys.exit("Exiting")
 
 ### Mode 2
 

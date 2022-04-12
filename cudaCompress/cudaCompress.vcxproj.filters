@@ -4,25 +4,16 @@
     <Filter Include="B3D">
       <UniqueIdentifier>{d5b68078-c377-4a6e-84bf-ed6c4f8b28df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CPU">
-      <UniqueIdentifier>{b3303fc5-dd6b-4913-a2ce-74aafb21630b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{19dca50a-e297-476c-a656-354fb0b2a8c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPU">
+      <UniqueIdentifier>{61ce4a23-c13a-42ae-85bd-b4d8c39e1e25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\B3D\B3DcompressFunctions.h">
       <Filter>B3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\EncodeCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\PredictorsCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\QuantizeCPU.h">
-      <Filter>CPU</Filter>
     </ClInclude>
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\util\Bits.h">
       <Filter>util</Filter>
@@ -41,6 +32,22 @@
     </ClInclude>
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\util\YCoCg.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\BitStream.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\cudaUtil.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\Encode.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\EncodeCommon.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\global.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\Instance.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\Timing.h" />
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\PredictorsCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\QuantizeCPU.h">
+      <Filter>CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\EncodeCPU.h">
+      <Filter>CPU</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
