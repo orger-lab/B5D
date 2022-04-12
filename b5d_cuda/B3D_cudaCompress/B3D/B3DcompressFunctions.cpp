@@ -222,7 +222,7 @@ namespace cudaCompress {
 		{
 			sizeY = sizeY * sizeZ;
 			sizeZ = 1;
-			if (dwtLevel > 0 && dwtLevel < 100) {
+			//if (dwtLevel > 0 && dwtLevel < 100) {
 				BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
 				//uint16_t* dpSymbolsN = dpSymbols + sizeX * sizeY;
 				uint16_t* pdpSymbols[1] = { dpSymbols };
@@ -333,23 +333,23 @@ namespace cudaCompress {
 					break;
 				}
 				cudaCheckMsg("unpredictor failed");
-			}
-			else {
-				dwtLevel = dwtLevel - 100;
-				BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
-				cudaCompress::decodeRLHuff(pInstance, bitStream, &dpSymbols, 1, sizeX * sizeY);
-				cudaCompress::util::unquantizeFromSymbols2D(dpBuffer, dpSymbols, sizeX, sizeY, quantStep);
-				for (int i = dwtLevel - 1; i > 0; i--)
-				{
-					cudaCompress::util::dwtFloat2DInverse(
-						dpBuffer, dpScratch, dpBuffer, sizeX / pow(2.0, i), sizeY / pow(2.0, i), 1, sizeX, sizeX, 0);
-				}
-				cudaCompress::util::dwtFloat2DInverseToUshort(
-					(uint16_t*)dpImage, dpScratch, dpBuffer, sizeX, sizeY, 1, sizeX, sizeX, 0);
-				
-				
-				
-			}
+			//}
+			//else {
+			//	dwtLevel = dwtLevel - 100;
+			//	BitStreamReadOnly bitStream(i_bitStream.data(), uint(i_bitStream.size() * sizeof(uint) * 8));
+			//	cudaCompress::decodeRLHuff(pInstance, bitStream, &dpSymbols, 1, sizeX * sizeY);
+			//	cudaCompress::util::unquantizeFromSymbols2D(dpBuffer, dpSymbols, sizeX, sizeY, quantStep);
+			//	for (int i = dwtLevel - 1; i > 0; i--)
+			//	{
+			//		cudaCompress::util::dwtFloat2DInverse(
+			//			dpBuffer, dpScratch, dpBuffer, sizeX / pow(2.0, i), sizeY / pow(2.0, i), 1, sizeX, sizeX, 0);
+			//	}
+			//	cudaCompress::util::dwtFloat2DInverseToUshort(
+			//		(uint16_t*)dpImage, dpScratch, dpBuffer, sizeX, sizeY, 1, sizeX, sizeX, 0);
+			//	
+			//	
+			//	
+			//}
 		}
 
 
