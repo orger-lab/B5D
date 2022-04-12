@@ -29,7 +29,7 @@ extern "C" {
 
 	/* Try to register the filter, passing on the HDF5 return value */
 	int register_cudaCompress(void){
-		fprintf(stdout, "registering filter\n");
+		fprintf(stderr, "registering filter\n");
 
 		int retval;
 
@@ -286,7 +286,7 @@ extern "C" {
 
 		// Aaron caveman debugging:
 		// fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", (values[5]));
-		//fprintf(stderr, "Compression mode: %d\n", (values[1]));
+		fprintf(stderr, "Compression mode: %d\n", (values[1]));
 
 		return 1;
 	}
