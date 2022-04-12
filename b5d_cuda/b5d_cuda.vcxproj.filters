@@ -84,12 +84,6 @@
     <ClInclude Include="B3D_cudaCompress\tools\Operator.h">
       <Filter>tools</Filter>
     </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\util\DWTCommon.cuh">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\util\DWTFloatFilters.cuh">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="B3D_cudaCompress\util\Quantize.cuh">
       <Filter>util</Filter>
     </ClInclude>
@@ -132,21 +126,6 @@
     <None Include="B3D_cudaCompress\scan\vector_kernel.cui">
       <Filter>scan</Filter>
     </None>
-    <None Include="B3D_cudaCompress\util\DWTFloat2DLowpassKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTFloatFromSymbolsKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTFloatKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTInt2DLowpassKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTIntKernels.cui">
-      <Filter>util</Filter>
-    </None>
     <None Include="B3D_cudaCompress\util\QuantizeKernels.cui">
       <Filter>util</Filter>
     </None>
@@ -164,12 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="B3D_cudaCompress\util\Bits.cu">
-      <Filter>util</Filter>
-    </CudaCompile>
-    <CudaCompile Include="B3D_cudaCompress\util\DWTFloat.cu">
-      <Filter>util</Filter>
-    </CudaCompile>
-    <CudaCompile Include="B3D_cudaCompress\util\DWTInt.cu">
       <Filter>util</Filter>
     </CudaCompile>
     <CudaCompile Include="B3D_cudaCompress\util\Predictors.cu">

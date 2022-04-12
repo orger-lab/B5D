@@ -32,8 +32,6 @@
     <ClInclude Include="B3D_cudaCompress\tools\Functor.h" />
     <ClInclude Include="B3D_cudaCompress\tools\Operator.h" />
     <ClInclude Include="B3D_cudaCompress\util.h" />
-    <ClInclude Include="B3D_cudaCompress\util\DWTCommon.cuh" />
-    <ClInclude Include="B3D_cudaCompress\util\DWTFloatFilters.cuh" />
     <ClInclude Include="B3D_cudaCompress\util\Quantize.cuh" />
     <ClInclude Include="intellisense_cuda_intrinsics.h" />
   </ItemGroup>
@@ -58,8 +56,6 @@
     <CudaCompile Include="B3D_cudaCompress\PackInc.cu" />
     <CudaCompile Include="B3D_cudaCompress\RunLength.cu" />
     <CudaCompile Include="B3D_cudaCompress\util\Bits.cu" />
-    <CudaCompile Include="B3D_cudaCompress\util\DWTFloat.cu" />
-    <CudaCompile Include="B3D_cudaCompress\util\DWTInt.cu" />
     <CudaCompile Include="B3D_cudaCompress\util\Predictors.cu" />
     <CudaCompile Include="B3D_cudaCompress\util\Quantize.cu" />
     <CudaCompile Include="B3D_cudaCompress\util\YCoCg.cu" />
@@ -74,11 +70,6 @@
     <None Include="B3D_cudaCompress\scan\scan_cta.cui" />
     <None Include="B3D_cudaCompress\scan\scan_kernel.cui" />
     <None Include="B3D_cudaCompress\scan\vector_kernel.cui" />
-    <None Include="B3D_cudaCompress\util\DWTFloat2DLowpassKernels.cui" />
-    <None Include="B3D_cudaCompress\util\DWTFloatFromSymbolsKernels.cui" />
-    <None Include="B3D_cudaCompress\util\DWTFloatKernels.cui" />
-    <None Include="B3D_cudaCompress\util\DWTInt2DLowpassKernels.cui" />
-    <None Include="B3D_cudaCompress\util\DWTIntKernels.cui" />
     <None Include="B3D_cudaCompress\util\QuantizeKernels.cui" />
   </ItemGroup>
   <ItemGroup>

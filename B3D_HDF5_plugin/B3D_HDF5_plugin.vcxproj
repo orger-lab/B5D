@@ -83,12 +83,10 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cudaCompressFunctions.cpp" />
     <ClCompile Include="GPUResources.cpp" />
     <ClCompile Include="HDF5_plugin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cudaCompressFunctions.h" />
     <ClInclude Include="cudaUtil.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="GPUResources.h" />

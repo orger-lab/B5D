@@ -5,7 +5,7 @@
 #include <cuda_runtime.h>
 
 #include "../Encode.h" // cudaCompress/
-#include "../util/DWT.h"
+//#include "../util/DWT.h"
 #include "../util/Quantize.h"
 #include "../util/Predictors.h"
 #include "../cudaUtil.h"
