@@ -10,11 +10,6 @@
 #include "../util/Predictors.h"
 #include "../cudaUtil.h"
 
-/*
-#include "../CPU/EncodeCPU.h"
-#include "../CPU/QuantizeCPU.h"
-#include "../CPU/PredictorsCPU.h"
-*/
 
 namespace cudaCompress {
 
@@ -60,46 +55,7 @@ namespace cudaCompress {
 			size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion = 1., float readNoise = 0.);
 
 
-		//CUCOMP_DLL void compressImageLLCPU( //CUCOMP_DLL 
-		//	//Instance* pInstance,
-		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
-		//	int16_t* pImage,  // input image in GPU memory
-		//	int16_t* pBuffer,
-		//	int16_t* pScratch,
-		//	uint16_t* pSymbols,
-		//	int sizeX, int sizeY, int sizeZ,         // image size
-		//	size_t dwtLevel, int tileSize);               // quantization step
 
-		//CUCOMP_DLL void decompressImageLLCPU( //CUCOMP_DLL 
-		//	//Instance* pInstance,
-		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
-		//	int16_t* pImage,  // input image in GPU memory
-		//	int16_t* pBuffer,
-		//	int16_t* pScratch,
-		//	uint16_t* pSymbols,
-		//	int sizeX, int sizeY, int sizeZ,         // image size
-		//	size_t dwtLevel, int tileSize);
-
-		//CUCOMP_DLL void compressImageCPU( //CUCOMP_DLL 
-		//	//Instance* pInstance,
-		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
-		//	int16_t* pImage,  // input image in GPU memory
-		//	float* pBuffer,
-		//	float* pScratch,
-		//	uint16_t* pSymbols,
-		//	int sizeX, int sizeY, int sizeZ,         // image size
-		//	size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion = 1., float readNoise = 0.);               // quantization step
-
-		//CUCOMP_DLL void decompressImageCPU( //CUCOMP_DLL 
-		//	//Instance* pInstance,
-		//	std::vector<uint>& i_bitStream, // bitStream for compressed data
-		//	int16_t* pImage,  // input image in GPU memory
-		//	float* pBuffer,
-		//	float* pScratch,
-		//	uint16_t* pSymbols,
-		//	int sizeX, int sizeY, int sizeZ,         // image size
-		//	size_t dwtLevel, float quantStep, float bgLevel, int tileSize, float conversion = 1., float readNoise = 0.);
-	//}
 }
 
 #endif
