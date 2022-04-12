@@ -10,9 +10,11 @@
 #include "../util/Predictors.h"
 #include "../cudaUtil.h"
 
+/*
 #include "../CPU/EncodeCPU.h"
 #include "../CPU/QuantizeCPU.h"
 #include "../CPU/PredictorsCPU.h"
+*/
 
 namespace cudaCompress {
 
