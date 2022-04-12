@@ -79,9 +79,6 @@
   <ItemGroup>
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\B3D\B3DcompressFunctions.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\BitStream.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\EncodeCPU.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\PredictorsCPU.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\QuantizeCPU.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\cudaUtil.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\Encode.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\EncodeCommon.h" />
