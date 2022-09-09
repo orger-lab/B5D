@@ -17,7 +17,7 @@ extern "C" {
 		(H5Z_filter_t)H5Z_FILTER_B5D,         /* Filter id number             */
 		1,              /* encoder_present flag (set to true) */
 		1,              /* decoder_present flag (set to true) */
-		"HDF5 B3D filter",	/* Filter name for debugging    */
+		"HDF5 B5D filter",	/* Filter name for debugging    */
 		(H5Z_can_apply_func_t)H5Z_cudaCompress_can_apply,                       /* The "can apply" callback     */
 		(H5Z_set_local_func_t)H5Z_cudaCompress_set_local,                       /* The "set local" callback     */
 		(H5Z_func_t)H5Z_cudaCompress_filter,         /* The actual filter function   */
