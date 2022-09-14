@@ -1,6 +1,7 @@
 # Specify filepatterns you want git to ignore.
 
 .vs/*
+set-aside/*
 
 /out.raw
 /info.txt
