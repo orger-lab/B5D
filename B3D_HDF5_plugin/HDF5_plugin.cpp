@@ -411,7 +411,7 @@ extern "C" {
 		putenv(buffer);
 		 
 
-		short* dpImage = shared->getBuffer<short>(elemCount * 2);
+		short* dpImage = shared->getBuffer<short>((int)(elemCount * 2));
 		float* dpBuffer = shared->getBuffer<float>(elemCount);
 		float* dpScratch = shared->getBuffer<float>(elemCount);
 		cudaCompress::Symbol16* dpSymbols = shared->getBuffer<Symbol16>(elemCount);
