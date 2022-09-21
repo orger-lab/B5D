@@ -3,6 +3,8 @@
 
 
 #include "HDF5_plugin.h"
+//#define H5Z_CUDACOMPRESS_DEBUG
+#include <iostream>
 
 //using namespace cudaCompress;
 
@@ -29,7 +31,9 @@ extern "C" {
 
 	/* Try to register the filter, passing on the HDF5 return value */
 	int register_cudaCompress(void){
-		fprintf(stderr, "registering filter\n");
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stdout, "registering filter\n");
+#endif
 
 		int retval;
 
@@ -48,7 +52,9 @@ extern "C" {
 	*/
 	htri_t H5Z_cudaCompress_can_apply(hid_t dcpl, hid_t type, hid_t space) {
 		/* check GPU */
+#ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stdout, "filter check started\n");
+#endif
 		cudaError status;
 		int deviceCount;
 		status = cudaGetDeviceCount(&deviceCount);
@@ -116,7 +122,9 @@ extern "C" {
 		   can't apply: 0
 		   error: -1
 		   */
+#ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stdout, "filter check completed\n");
+#endif
 		return 1;
 	}
 
@@ -214,6 +222,16 @@ extern "C" {
 		H5T_order_t ord = H5Tget_order(type);
 		H5T_sign_t sgn = H5Tget_sign(type);
 		H5T_class_t clss = H5Tget_class(type);
+		//H5T_class_t clss = H5Tget_class((hid_t)354);
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stderr, "elemSize %d\n ", elemSize);
+		fprintf(stderr, "H5T_order_t %d\n ", ord);
+		fprintf(stderr, "H5T_sign_t %d d\n ", sgn);
+		fprintf(stderr, "H5T_class_ts %d\n ", clss);
+#endif
+
+
 
 		if (elemSize == 0) return -1;
 
@@ -237,6 +255,10 @@ extern "C" {
 		}
 
 
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stderr, "set local clss %d type %d values %d\n ", clss, type, values[N_CD_VALUES + 5]);
+#endif
+
 		int elemCount = 1;
 		for (i = 0; i < ndims; i++){
 			elemCount *= chunkdims[i];
@@ -256,9 +278,11 @@ extern "C" {
 			pShared->destroy();
 			delete pShared;
 		}
+#ifdef H5Z_CUDACOMPRESS_DEBUG
 		else {
 			fprintf(stderr, "buffer2 is already null\n");
 		}
+#endif // H5Z_CUDACOMPRESS_DEBUG
 
 		uint newZ = values[N_CD_VALUES + 2] * 
 					values[N_CD_VALUES + 3] * 
@@ -280,14 +304,15 @@ extern "C" {
 		#ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stderr, "cudaCompress: Computed buffer size %d\n", bufsize);
 		#endif
-		fprintf(stderr, "cudaCompress: Computed buffer size %d\n", bufsize); // Aaron edit!!!
 		r = H5Pmodify_filter(dcpl, H5Z_FILTER_B5D, flags, nelements, values);
 		if (r < 0) return -1;
 
 		// Aaron caveman debugging:
 		// fprintf(stderr, "H5Z_cudaCompress_set_local tileSize: %d\n", (values[5]));
+#ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stderr, "Compression mode: %d\n", (values[1]));
-
+		fprintf(stdout, "-----------------------\n");
+#endif
 		return 1;
 	}
 
@@ -299,6 +324,19 @@ extern "C" {
 	{
 		cudaSetDevice(DEVICE);
 		int outDataLength;
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stdout, "nbytes: %d\n", nbytes);
+		fprintf(stdout, "buf_size: %d %d\n", buf_size, buf_size[0]);
+		
+	/*	fprintf(stdout, "buf: %d %d\n", buf, buf[0, 0]);
+		fprintf(stdout, "buf: %d %d\n", &buf, buf[0]);*/
+
+		uint16_t* q = (uint16_t*)buf[0];
+		fprintf(stdout, "Q: %u %u %u %u %u %u\n", q[0], q[1], q[2], q[3], q[4], q[5]);
+		//std::cout << "q[] " << q[0];
+
+#endif // H5Z_CUDACOMPRESS_DEBUG
 
 
 		/* Aaron edit: From the H5Z_cudaCompress_set_local function
@@ -342,6 +380,14 @@ extern "C" {
 		
 		int elemCount = sizeX * sizeY * newSizeZ; 
 		outDataLength = elemCount * sizeof(type); //(short); // Aaron edit: should this be sizeof(type) ???
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stdout, "size of type: %d\n", sizeof(type));
+		fprintf(stdout, "size of short: %d\n", sizeof(short));
+		fprintf(stdout, "outDataLength: %d\n", outDataLength);
+		fprintf(stdout, "element count: %d\n", elemCount);
+		std::cout << "element count check: " << elemCountCheck << "\n";
+
+#endif
 		Resources* shared;
 		char buffer[50];
 		char* buffer2;
@@ -421,7 +467,10 @@ extern "C" {
 			shared->releaseBuffers(4);
 		}
 		else {
+#ifdef H5Z_CUDACOMPRESS_DEBUG
 
+			fprintf(stdout, "Enter write\n");
+#endif
 			/** Compress data.
 			**
 			**/
@@ -434,6 +483,9 @@ extern "C" {
 			}
 			else {
 				cudaMemcpy(dpImage, *buf, elemCount * sizeof(uint16_t), cudaMemcpyHostToDevice);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "Not 8bit data\n");
+#endif
 			}
 
 			// TODO: fix lossy CPU version
@@ -442,29 +494,65 @@ extern "C" {
 				compressImage(shared->m_pCuCompInstance, bitStream, dpImage, dpBuffer, dpScratch, 
 					dpSymbols, sizeX, sizeY, newSizeZ, dwtLevels, 
 					quantStep, bgLevel, tileSize, conversion, readNoise);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "Lossy\n");
+#endif
 			}
 			else {
 				// start lossless compression
 				compressImageLL(shared->m_pCuCompInstance, bitStream, dpImage, (short*)dpBuffer, (short*)dpScratch, 
 					dpSymbols, sizeX, sizeY, newSizeZ, 
 					dwtLevels, tileSize);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "Lossless\n");
+#endif
 			}
+
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+			fprintf(stdout, "size after compression\n");
+			fprintf(stdout, "buf_size: %d %d\n", buf_size, buf_size[0]);
+			fprintf(stdout, "outDataLength: %d\n", outDataLength);
+
+#endif
+
+
+
 			/* compressed data is now in bitStream - both GPU and CPU version
 			copy it to output buffer */
 			outDataLength = bitStream.size() * sizeof(uint);
 			if (*buf_size < outDataLength) {
-				//H5free_memory(*buf);
-				free(*buf);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "freeing memory\n");
+
+#endif
 			//#ifdef H5Z_CUDACOMPRESS_DEBUG
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "pre-buffer allocation\n");
+#endif
 				*buf = H5allocate_memory(outDataLength, false);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+				fprintf(stdout, "buffer allocated\n");
+#endif
 			//#else
 //				*buf = malloc(outDataLength);
 			//#endif
 				*buf_size = outDataLength;
 			}
 			memcpy(*buf, bitStream.data(), outDataLength);
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+			fprintf(stdout, "finished memcopy\n");
+#endif
 			shared->releaseBuffers(4);
 		}
+
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+		fprintf(stdout, "buf_size: %d %d\n", buf_size, buf_size[0]);
+		fprintf(stdout, "outDataLength: %d\n", outDataLength);
+		fprintf(stdout, "------------\n");
+#endif
+
 
 		return outDataLength;
 

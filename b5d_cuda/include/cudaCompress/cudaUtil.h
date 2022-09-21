@@ -39,6 +39,10 @@ inline void __cudaSafeCall(cudaError err, const char* file, const int line)
 inline void __cudaCheckMsg(const char* errorMessage, const char* file, const int line)
 {
     cudaError_t err = cudaGetLastError();
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+    fprintf(stderr, "%s (%d)\n", errorMessage, (int)err);
+#endif
     if(CHECK_ERROR(err)) {
         fprintf(stderr, "%s(%i) : cudaCheckMsg() CUDA error : %s : (%d) %s.\n", file, line, errorMessage, (int)err, cudaGetErrorString(err));
 #ifdef _DEBUG

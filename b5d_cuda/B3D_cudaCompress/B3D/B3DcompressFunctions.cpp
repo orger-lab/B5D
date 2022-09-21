@@ -1,5 +1,11 @@
 #include <cudaCompress/B3D/B3DcompressFunctions.h>
 
+
+//#define H5Z_CUDACOMPRESS_DEBUG
+
+
+
+
 namespace cudaCompress {
 
 	//namespace util {
@@ -83,6 +89,26 @@ namespace cudaCompress {
 			sizeY = sizeY * sizeZ;
 			sizeZ = 1;
 			uint16_t* pdpSymbols[1] = { dpSymbols };
+
+
+			cudaCheckMsg("cuda start");
+
+#ifdef H5Z_CUDACOMPRESS_DEBUG
+			fprintf(stdout, "COMPRESSION START\n");
+			fprintf(stdout, "sizeX %d \n", sizeX);
+			fprintf(stdout, "sizeY %d \n", sizeY);
+			fprintf(stdout, "sizeZ %d \n", sizeZ);
+			fprintf(stdout, "dwtLevel %lu \n", dwtLevel);
+			fprintf(stdout, "quantStep %f \n", quantStep);
+			fprintf(stdout, "bgLevel %f \n", bgLevel);
+			fprintf(stdout, "tileSize %d \n", tileSize);
+			fprintf(stdout, "conversion %f \n", conversion);
+			fprintf(stdout, "readNoise %f \n", readNoise);/*
+			fprintf(stdout, "dpImage: %d %d %d %d %d %d\n", dpImage[0], dpImage[1], dpImage[2], dpImage[3], dpImage[4], dpImage[5]);
+			fprintf(stdout, "i_bitStream: %u %u %u %u %u %u\n", i_bitStream[0], i_bitStream[1], i_bitStream[2], i_bitStream[3], i_bitStream[4], i_bitStream[5]);*/
+
+#endif
+
 			switch (dwtLevel) {
 			case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
 				cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
