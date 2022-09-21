@@ -379,7 +379,9 @@ extern "C" {
 		// Initialize cudaCompress, allocate GPU resources and upload data.
 		
 		int elemCount = sizeX * sizeY * newSizeZ; 
-		outDataLength = elemCount * sizeof(type); //(short); // Aaron edit: should this be sizeof(type) ???
+		long long elemCountCheck = sizeX * sizeY * newSizeZ;
+		outDataLength = elemCount * sizeof(short); //(short); // Aaron edit: should this be sizeof(type) ???
+
 #ifdef H5Z_CUDACOMPRESS_DEBUG
 		fprintf(stdout, "size of type: %d\n", sizeof(type));
 		fprintf(stdout, "size of short: %d\n", sizeof(short));
@@ -388,6 +390,8 @@ extern "C" {
 		std::cout << "element count check: " << elemCountCheck << "\n";
 
 #endif
+
+
 		Resources* shared;
 		char buffer[50];
 		char* buffer2;
@@ -526,6 +530,11 @@ extern "C" {
 				fprintf(stdout, "freeing memory\n");
 
 #endif
+				// Balint had left this as free(*buf) with H5free_memory(*buf) being commented out.
+				// Swapping the comment to free(*buf) seems to clear up a bug if the compression fails
+				// and the size of the byte stream is bigger than expected
+				H5free_memory(*buf);
+				//free(*buf);
 			//#ifdef H5Z_CUDACOMPRESS_DEBUG
 #ifdef H5Z_CUDACOMPRESS_DEBUG
 				fprintf(stdout, "pre-buffer allocation\n");

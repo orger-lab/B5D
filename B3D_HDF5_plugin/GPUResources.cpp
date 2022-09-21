@@ -69,10 +69,6 @@ Resources::~Resources()
 
 byte* Resources::getByteBuffer(size_t bytes)
 {
-	// Aaron caveman debugging
-	 //fprintf(stderr, "m_bufferOffset: %d\n", m_bufferOffset);
-	 //fprintf(stderr, "bytes: %d\n", bytes);
-	 //fprintf(stderr, "m_config.bufferSize: %d\n", m_config.bufferSize);
 	assert(m_bufferOffset + bytes <= m_config.bufferSize);
 	if (m_bufferOffset + bytes > m_config.bufferSize) {
 		printf("ERROR: Resources::getByteBuffer: out of memory!\n");
