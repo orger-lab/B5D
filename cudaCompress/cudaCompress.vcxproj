@@ -30,7 +30,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.5.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.6.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -79,9 +79,6 @@
   <ItemGroup>
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\B3D\B3DcompressFunctions.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\BitStream.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\EncodeCPU.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\PredictorsCPU.h" />
-    <ClInclude Include="..\b5d_cuda\include\cudaCompress\CPU\QuantizeCPU.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\cudaUtil.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\Encode.h" />
     <ClInclude Include="..\b5d_cuda\include\cudaCompress\EncodeCommon.h" />
@@ -97,6 +94,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.5.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.6.targets" />
   </ImportGroup>
 </Project>

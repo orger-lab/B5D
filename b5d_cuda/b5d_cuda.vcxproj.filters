@@ -4,12 +4,6 @@
     <Filter Include="B3D">
       <UniqueIdentifier>{8ac2c53b-d61a-4b3c-abea-c2d71d1a6641}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CPU">
-      <UniqueIdentifier>{678c0a01-8613-41bc-ad4b-fa23d357732d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="CPU\tools">
-      <UniqueIdentifier>{c353dd8e-a284-4e10-944d-92a9143ecba4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="profiler">
       <UniqueIdentifier>{25f47007-8f00-4e9f-867c-acf9ef1d84f3}</UniqueIdentifier>
     </Filter>
@@ -25,49 +19,16 @@
     <Filter Include="util">
       <UniqueIdentifier>{89fc5cb2-b4c8-443c-a19f-dc6ac7228c9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CPU">
+      <UniqueIdentifier>{d7238be1-23cc-4b44-96b1-eefd2c22c54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPU\tools">
+      <UniqueIdentifier>{3bab403a-b0fa-4dae-8fa2-c2092e984274}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="B3D_cudaCompress\B3D\B3DcompressFunctions.cpp">
       <Filter>B3D</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\ArithmeticCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\EncodeCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\EncoderTestSuite.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\GolombRiceCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\HistogramCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\HuffmanCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\HuffmanTableCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\PredictorsCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\QuantizeCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\RBUCCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\RunLengthCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\YCoCgCPU.cpp">
-      <Filter>CPU</Filter>
-    </ClCompile>
-    <ClCompile Include="B3D_cudaCompress\CPU\tools\stb_image.c">
-      <Filter>CPU\tools</Filter>
     </ClCompile>
     <ClCompile Include="B3D_cudaCompress\profiler\profiler.cpp">
       <Filter>profiler</Filter>
@@ -91,41 +52,11 @@
     <ClCompile Include="B3D_cudaCompress\Instance.cpp" />
     <ClCompile Include="B3D_cudaCompress\InstanceImpl.cpp" />
     <ClCompile Include="B3D_cudaCompress\Timing.cpp" />
+    <ClCompile Include="B3D_cudaCompress\CPU\tools\stb_image.c">
+      <Filter>CPU\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="B3D_cudaCompress\CPU\ArithmeticCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\EncoderTestSuite.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\GolombRiceCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HistogramCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\HuffmanTableCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\RBUCCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\RunLengthCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\YCoCgCPU.h">
-      <Filter>CPU</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\tools\Entropy.h">
-      <Filter>CPU\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\CPU\tools\stb_image.h">
-      <Filter>CPU\tools</Filter>
-    </ClInclude>
     <ClInclude Include="B3D_cudaCompress\profiler\profiler.hpp">
       <Filter>profiler</Filter>
     </ClInclude>
@@ -153,12 +84,6 @@
     <ClInclude Include="B3D_cudaCompress\tools\Operator.h">
       <Filter>tools</Filter>
     </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\util\DWTCommon.cuh">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="B3D_cudaCompress\util\DWTFloatFilters.cuh">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="B3D_cudaCompress\util\Quantize.cuh">
       <Filter>util</Filter>
     </ClInclude>
@@ -175,6 +100,12 @@
     <ClInclude Include="B3D_cudaCompress\PackInc.h" />
     <ClInclude Include="B3D_cudaCompress\RunLength.h" />
     <ClInclude Include="B3D_cudaCompress\util.h" />
+    <ClInclude Include="B3D_cudaCompress\CPU\tools\Entropy.h">
+      <Filter>CPU\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="B3D_cudaCompress\CPU\tools\stb_image.h">
+      <Filter>CPU\tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="B3D_cudaCompress\reduce\reduce_app.cui">
@@ -195,21 +126,6 @@
     <None Include="B3D_cudaCompress\scan\vector_kernel.cui">
       <Filter>scan</Filter>
     </None>
-    <None Include="B3D_cudaCompress\util\DWTFloat2DLowpassKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTFloatFromSymbolsKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTFloatKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTInt2DLowpassKernels.cui">
-      <Filter>util</Filter>
-    </None>
-    <None Include="B3D_cudaCompress\util\DWTIntKernels.cui">
-      <Filter>util</Filter>
-    </None>
     <None Include="B3D_cudaCompress\util\QuantizeKernels.cui">
       <Filter>util</Filter>
     </None>
@@ -227,12 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="B3D_cudaCompress\util\Bits.cu">
-      <Filter>util</Filter>
-    </CudaCompile>
-    <CudaCompile Include="B3D_cudaCompress\util\DWTFloat.cu">
-      <Filter>util</Filter>
-    </CudaCompile>
-    <CudaCompile Include="B3D_cudaCompress\util\DWTInt.cu">
       <Filter>util</Filter>
     </CudaCompile>
     <CudaCompile Include="B3D_cudaCompress\util\Predictors.cu">

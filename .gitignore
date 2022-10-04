@@ -1,11 +1,18 @@
 # Specify filepatterns you want git to ignore.
 
 .vs/*
+set_aside/*
+examples/*
 
 /out.raw
 /info.txt
 /*.sdf
 /*.opensdf
 /bin
-/x64
-**/x64
+x64/Debug/*
+B3D_HDF5_plugin/x64/*
+b5d_cuda/x64/*
+cudaCompress/x64/*
+
+# python
+*__pycache__*
