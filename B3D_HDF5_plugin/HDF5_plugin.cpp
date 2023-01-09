@@ -4,7 +4,9 @@
 
 #include "HDF5_plugin.h"
 //#define H5Z_CUDACOMPRESS_DEBUG
+#define CPP_DEBUG
 #include <iostream>
+#include <windows.h>
 
 //using namespace cudaCompress;
 
@@ -142,6 +144,12 @@ extern "C" {
 	*/
 	herr_t H5Z_cudaCompress_set_local(hid_t dcpl, hid_t type, hid_t space){
 		cudaSetDevice(DEVICE);
+
+#ifdef CPP_DEBUG
+		SYSTEMTIME set_local_start, set_local_end;
+		GetSystemTime(&set_local_start);
+#endif // CPP_DEBUG
+
 
 		int ndims;
 		int i;
@@ -313,7 +321,13 @@ extern "C" {
 		fprintf(stderr, "Compression mode: %d\n", (values[1]));
 		fprintf(stdout, "-----------------------\n");
 #endif
+#ifdef CPP_DEBUG
+		GetSystemTime(&set_local_end);
+		fprintf(stdout, "set local function took %d ms\n", set_local_end.wMilliseconds - set_local_start.wMilliseconds);
+#endif // CPP_DEBUG
+
 		return 1;
+
 	}
 
 
@@ -323,6 +337,11 @@ extern "C" {
 	size_t H5Z_cudaCompress_filter(unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[], size_t nbytes, size_t *buf_size, void **buf)
 	{
 		cudaSetDevice(DEVICE);
+#ifdef CPP_DEBUG
+		SYSTEMTIME st_start, st_end;
+		GetSystemTime(&st_start);
+#endif // CPP_DEBUG
+
 		int outDataLength;
 
 #ifdef H5Z_CUDACOMPRESS_DEBUG
@@ -422,6 +441,7 @@ extern "C" {
 
 		std::vector<uint> bitStream;
 
+
 		if (flags & H5Z_FLAG_REVERSE) {
 
 			/** Decompress data.
@@ -475,6 +495,8 @@ extern "C" {
 
 			fprintf(stdout, "Enter write\n");
 #endif
+			
+			
 			/** Compress data.
 			**
 			**/
@@ -561,7 +583,10 @@ extern "C" {
 		fprintf(stdout, "outDataLength: %d\n", outDataLength);
 		fprintf(stdout, "------------\n");
 #endif
-
+#ifdef CPP_DEBUG
+		GetSystemTime(&st_end);
+		fprintf(stdout, "total time took %d ms\n", st_end.wMilliseconds - st_start.wMilliseconds);
+#endif // CPP_DEBUG
 
 		return outDataLength;
 

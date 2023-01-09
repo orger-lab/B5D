@@ -1,10 +1,9 @@
 #include <cudaCompress/B3D/B3DcompressFunctions.h>
-
+//#include <stdio.h>      /* printf */
+#include <time.h>       /* time_t, struct tm, difftime, time, mktime */
+#include <windows.h>
 
 //#define H5Z_CUDACOMPRESS_DEBUG
-
-
-
 
 namespace cudaCompress {
 
@@ -108,9 +107,16 @@ namespace cudaCompress {
 			fprintf(stdout, "i_bitStream: %u %u %u %u %u %u\n", i_bitStream[0], i_bitStream[1], i_bitStream[2], i_bitStream[3], i_bitStream[4], i_bitStream[5]);*/
 
 #endif
-
+			// c++ timers
+			//time_t cpp_start, cpp_end;
+			//SYSTEMTIME st_start, st_end;
+			//double seconds;
+			//GetSystemTime(&st_start);
 			switch (dwtLevel) {
 			case 1: // first version, square root /w readnoise + prediction7 + quantization within noise level
+
+				//time(&cpp_start);
+
 				cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
 				// variance stabilization
 				cudaCompress::util::vst(dpBuffer, dpBuffer, sizeX * sizeY, bgLevel, conversion, readNoise);
@@ -119,6 +125,7 @@ namespace cudaCompress {
 				// run prediction + quantization
 				cudaCompress::util::predictor7_tiles_wnll(dpBuffer, dpScratch, dpImage, sizeX, sizeX, sizeY, tileSize);
 				cudaCompress::util::symbolize(dpSymbols, dpImage, sizeX, sizeY, sizeZ);
+				//time(&cpp_end);
 				break;
 			case 2: // swapped: square root /w readnoise + quantization + prediction7
 				cudaCompress::util::u2f((uint16_t*)dpImage, dpBuffer, sizeX * sizeY);
@@ -138,6 +145,8 @@ namespace cudaCompress {
 			cudaCheckMsg("predictor failed");
 			cudaCompress::BitStream bitStream(&i_bitStream);
 			cudaCompress::encodeRLHuff(pInstance, bitStream, pdpSymbols, 1, sizeX * sizeY);
+			//GetSystemTime(&st_end);
+			//fprintf(stdout, "everything took %d ms\n", st_end.wMilliseconds - st_start.wMilliseconds);
 		}
 
 		void decompressImage(
