@@ -667,33 +667,58 @@ namespace cudaCompress {
 		//}
 
 		__global__ void _u2f(uint16_t* in, float* out, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = in[x];
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = in[x];
+			}
+			
 		}
 
 		__global__ void _f2u(float* in, uint16_t* out, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = in[x] + (in[x] < 0 ? -1 : 1) * 0.5;
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = in[x] + (in[x] < 0 ? -1 : 1) * 0.5;
+			}
 		}
 
 		__global__ void _u8tou16(uint8_t* in, uint16_t* out, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = in[x];
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = in[x];
+			}
 		}
 
 		__global__ void _u16tou8(uint16_t* in, uint8_t* out, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = min(max(in[x],0),255);
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = min(max(in[x], 0), 255);
+			}
 		}
 
 		__global__ void _multiply(float* in, float* out, float factor, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = in[x] * factor;
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = in[x] * factor;
+			}
 		}
 
 		__global__ void _multiply(int16_t* in, float* out, float factor, int num) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			out[x] = in[x] * factor;
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				out[x] = in[x] * factor;
+			}
 		}
 
 		//__global__ void _offset(float* in, float* out, float level, int num) {
@@ -731,23 +756,31 @@ namespace cudaCompress {
 		//}
 		
 		__global__ void _vst(float* in, float* out, int num, float offset, float conversion, float sigma) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			//float z = in[x];
-			//z = (z - offset) / conversion;
-			//z = 2 * sqrtf(z + sigma*sigma) - 2 * sigma;
-			//out[x] = z;
-			out[x] = 2 * sqrtf((fmaxf(in[x] - offset, 0)) / conversion + sigma*sigma) - 2 * sigma;
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				//float z = in[x];
+				//z = (z - offset) / conversion;
+				//z = 2 * sqrtf(z + sigma*sigma) - 2 * sigma;
+				//out[x] = z;
+				out[x] = 2 * sqrtf((fmaxf(in[x] - offset, 0)) / conversion + sigma * sigma) - 2 * sigma;
+			}
 		}
 
 		__global__ void _invVst(float* in, float* out, int num, float offset, float conversion, float sigma) {
-			int x = blockIdx.x * blockDim.x + threadIdx.x;
-			float D = in[x];
-			D = D + 2 * sigma; // remove offset
-			if (D >= 2 * sigma) {
-				out[x] = ((D*D/4)-sigma*sigma)*conversion + offset;
-			}
-			else {
-				out[x] = offset ;
+			int index = blockIdx.x * blockDim.x + threadIdx.x;
+			int stride = blockDim.x * gridDim.x;
+			for (int x = index; x < num; x += stride)
+			{
+				float D = in[x];
+				D = D + 2 * sigma; // remove offset
+				if (D >= 2 * sigma) {
+					out[x] = ((D * D / 4) - sigma * sigma) * conversion + offset;
+				}
+				else {
+					out[x] = offset;
+				}
 			}
 		}
 
